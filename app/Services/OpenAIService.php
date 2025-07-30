@@ -4,7 +4,10 @@ namespace App\Services;
 
 use App\Enums\DetailType;
 use App\Models\Campaign;
+use App\Models\Document;
+use App\Models\DocumentDetail;
 use App\Models\Invoice;
+use App\Models\User;
 use Prism\Prism\Enums\Provider;
 use Prism\Prism\Prism;
 use Prism\Prism\Schema\BooleanSchema;
@@ -16,11 +19,14 @@ use Prism\Prism\ValueObjects\Messages\UserMessage;
 
 class OpenAIService
 {
-    public function readInvoice(mixed $invoiceText, Campaign $campaign): array
+    public function readInvoice(mixed $invoiceText, User $user): array
     {
         $schema = [];
-
-        foreach ($campaign->ocrDocumentDetails as $ocrDocumentDetail) {
+        /**
+         * @var DocumentDetail $documentDetails
+         */
+        $documentDetails = $user->documentDetails;
+        foreach ($documentDetails as $ocrDocumentDetail) {
             $schema[] = match ($ocrDocumentDetail->type) {
                 DetailType::String => new StringSchema(
                     name: $ocrDocumentDetail->name,
@@ -46,13 +52,13 @@ class OpenAIService
 
         $response = Prism::structured()
             ->using(Provider::OpenAI, 'gpt-4o')
-            ->withSystemPrompt(view('prompts.invoice', [
+            ->withSystemPrompt(view('prompts.document', [
                 'invoiceSchema' => json_encode($invoiceSchema),
                 'invoiceText' => json_encode($invoiceText),
             ]))
             ->withSchema($invoiceSchema)
             ->asStructured();
-        $view = view('prompts.invoice', [
+        $view = view('prompts.document', [
             'invoiceSchema' => json_encode($invoiceSchema),
             'invoiceText' => json_encode($invoiceText),
         ]);
@@ -88,7 +94,7 @@ class OpenAIService
         return $response->structured;
     }
 
-    public function generateTests(ObjectSchema $test_schema, string $test_case, string $validations, string $additional_description): array
+    /*public function generateTests(ObjectSchema $test_schema, string $test_case, string $validations, string $additional_description): array
     {
         return Prism::structured()
             ->using(Provider::OpenAI, 'gpt-4o')
@@ -109,13 +115,18 @@ class OpenAIService
                                 ⚠️ Return only the final JSON object. Do not include code comments, descriptions, or explanations.')
             ->asStructured()
             ->structured;
-    }
+    }*/
 
-    public function readInvoiceFromImg(string $invoiceText, Campaign $campaign, Invoice $invoice): array
+    public function readInvoiceFromImg(string $invoiceText, Document $document): array
     {
+        /**
+         * @var User $user
+         * @var DocumentDetail $documentDetails
+         */
         $schema = [];
-
-        foreach ($campaign->ocrDocumentDetails as $ocrDocumentDetail) {
+        $user = $document->user;
+        $documentDetails = $user->documentDetails;
+        foreach ($documentDetails as $ocrDocumentDetail) {
             $schema[] = match ($ocrDocumentDetail->type) {
                 DetailType::String => new StringSchema(
                     name: $ocrDocumentDetail->name,
@@ -145,7 +156,7 @@ class OpenAIService
                     These documents are by italian wholesalers to their customer (which are mostly installers).
                     All dates MUST follow the format d/m/Y.
                     ',
-            [Image::fromPath($invoice->getFirstMediaPath('combined_document'))]
+            [Image::fromPath($document->getFirstMediaPath('combined_document'))]
         );
         $response = Prism::structured()
             ->using(Provider::OpenAI, 'gpt-4o')
