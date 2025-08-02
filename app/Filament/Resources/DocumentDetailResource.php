@@ -2,11 +2,15 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\DetailType;
 use App\Filament\Resources\DocumentDetailResource\Pages;
 use App\Models\DocumentDetail;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\BulkActionGroup;
@@ -29,38 +33,39 @@ class DocumentDetailResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $record = $form->model();
         return $form
             ->schema([
                 TextInput::make('name')
                     ->required()
                     ->reactive()
+                    ->debounce()
                     ->afterStateUpdated(fn($state, callable $set) => $set('slug', Str::slug($state))),
 
                 TextInput::make('slug')
                     ->disabled()
-                    ->required()
-                    ->unique(DocumentDetail::class, 'slug', fn($record) => $record),
+                    ->nullable(),
 
-                TextInput::make('type')
-                    ->required(),
-
-                TextInput::make('nullable')
-                    ->required(),
+                Select::make('type')
+                    ->options(DetailType::class),
 
                 Select::make('user_id')
-                    ->relationship('user', 'name')
-                    ->searchable()
-                    ->required(),
+                    ->hidden()
+                    ->default(auth()->id()),
 
-                TextInput::make('additional_info_for_prompt')
-                    ->required(),
+                Textarea::make('additional_info_for_prompt')
+                    ->columnSpanFull(),
+
+                Checkbox::make('nullable'),
 
                 Placeholder::make('created_at')
                     ->label('Created Date')
+                    ->hidden()
                     ->content(fn(?DocumentDetail $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
                     ->label('Last Modified Date')
+                    ->hidden()
                     ->content(fn(?DocumentDetail $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }

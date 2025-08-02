@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class DocumentDetailsRelationManager extends RelationManager
 {
-    protected static string $relationship = 'documentDetails';
+    protected static string $relationship = 'extractedFields';
 
     public function form(Form $form): Form
     {
@@ -27,9 +27,11 @@ class DocumentDetailsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('document_id')
             ->columns([
-                Tables\Columns\TextColumn::make('document_id'),
+                Tables\Columns\TextColumn::make('document_detail.name')
+                    ->label('Nome dettaglio'),
+                Tables\Columns\TextColumn::make('value')
+                    ->label('Valore'),
             ])
             ->filters([
                 //

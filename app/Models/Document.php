@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -24,8 +25,9 @@ class Document extends Model implements HasMedia
             ->singleFile();
     }
 
-    public function documentDetails(): BelongsToMany
-    {
-        return $this->belongsToMany(DocumentDetail::class, 'extracted_fields', 'document_id', 'document_detail_id');
+    public function extractedFields(): HasMany {
+        return $this->hasMany(ExtractedField::class);
     }
+
+
 }

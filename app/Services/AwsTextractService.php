@@ -6,9 +6,10 @@ use App\AwsLowConfidenceError;
 use App\Interfaces\OCRService;
 use Aws\Textract\TextractClient;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use setasign\Fpdi\Fpdi;
 use setasign\Fpdi\PdfParser\CrossReference\CrossReferenceException;
-use Str;
+
 
 class AwsTextractService implements OCRService
 {
@@ -23,7 +24,7 @@ class AwsTextractService implements OCRService
             ],
         ]);
 
-        $endDir = storage_path('split'.rand().'/');
+        /*$endDir = storage_path('split'.rand().'/');
         if (strtolower(pathinfo($filePath, PATHINFO_EXTENSION)) === 'pdf') {
             try {
                 $files = $this->splitPdf($filePath, $endDir);
@@ -31,20 +32,20 @@ class AwsTextractService implements OCRService
                 $name = Str::replace('/', '-', $filePath);
                 $output_dir = 'storage/app/public/converted-'.$name;
                 dump($output_dir);
-                shell_exec('gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dNOPAUSE -dQUIET -dBATCH -sOutputFile='.$output_dir.' '.$filePath);
+                //shell_exec('gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dNOPAUSE -dQUIET -dBATCH -sOutputFile='.$output_dir.' '.$filePath);
                 $files = $this->splitPdf($output_dir, $endDir);
             }
         } else {
             $files = [$filePath];
-        }
+        }*/
 
         $cellMap = [];
         $rawLines = [];
         $formFields = [];
 
-        foreach ($files as $file) {
-            $fp_image = fopen($file, 'rb');
-            $image = fread($fp_image, filesize($file));
+        //foreach ($files as $file) {
+            $fp_image = fopen($filePath, 'rb');
+            $image = fread($fp_image, filesize($filePath));
             fclose($fp_image);
 
             $result = $textractClient->analyzeDocument(
@@ -76,7 +77,7 @@ class AwsTextractService implements OCRService
             $cellMap = array_merge($cellMap, $this->extractTablesCells($blocks));
             $formFields = array_merge($formFields, $this->extractFormFields($blocks));
             $rawLines = array_merge($rawLines, $this->extractRawLines($blocks));
-        }
+        //}
 
         return json_encode([
             'cellMap' => $cellMap,

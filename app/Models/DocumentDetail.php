@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DocumentDetail extends Model
 {
@@ -16,8 +17,9 @@ class DocumentDetail extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function documents(): BelongsToMany
+    public function extractedFields(): HasMany
     {
-        return $this->belongsToMany(Document::class, 'extracted_fields', 'document_detail_id', 'document_id');
+        return $this->hasMany(ExtractedField::class);
     }
+
 }

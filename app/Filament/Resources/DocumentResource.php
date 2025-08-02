@@ -36,10 +36,8 @@ class DocumentResource extends Resource
 
                 SpatieMediaLibraryFileUpload::make('document'),
 
-                Select::make('user_id')
-                    ->default(auth()->id())
-                    ->hidden()
-                    ->required(),
+                TextInput::make('user_id')
+                    ->default(auth()->user()->id),
 
                 Placeholder::make('created_at')
                     ->label('Created Date')
@@ -48,8 +46,6 @@ class DocumentResource extends Resource
                 Placeholder::make('updated_at')
                     ->label('Last Modified Date')
                     ->content(fn(?Document $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
-
-
             ]);
     }
 
