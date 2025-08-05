@@ -34,7 +34,8 @@ class DocumentResource extends Resource
             ->schema([
                 TextInput::make('title'),
 
-                SpatieMediaLibraryFileUpload::make('document'),
+                SpatieMediaLibraryFileUpload::make('attachment')
+                    ->collection('document'),
 
                 TextInput::make('user_id')
                     ->default(auth()->user()->id),

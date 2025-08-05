@@ -44,14 +44,15 @@ class DocumentDetailResource extends Resource
 
                 TextInput::make('slug')
                     ->disabled()
+                    ->debounce()
                     ->nullable(),
 
                 Select::make('type')
                     ->options(DetailType::class),
 
-                Select::make('user_id')
-                    ->hidden()
-                    ->default(auth()->id()),
+                TextInput::make('user_id')
+
+                    ->default(auth()->user()->id),
 
                 Textarea::make('additional_info_for_prompt')
                     ->columnSpanFull(),

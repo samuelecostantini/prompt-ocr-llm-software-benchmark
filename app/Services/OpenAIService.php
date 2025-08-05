@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\DetailType;
+use App\Facades\DetailSchema;
 use App\Models\Campaign;
 use App\Models\Document;
 use App\Models\DocumentDetail;
@@ -117,38 +118,15 @@ class OpenAIService
             ->structured;
     }*/
 
-    public function readInvoiceFromImg(string $invoiceText, Document $document): array
+    public function readInvoiceFromImg(Document $document): array
     {
         /**
          * @var User $user
          * @var DocumentDetail $documentDetails
          */
-        $schema = [];
         $user = $document->user;
-        $documentDetails = $user->documentDetails;
-        foreach ($documentDetails as $ocrDocumentDetail) {
-            $schema[] = match ($ocrDocumentDetail->type) {
-                DetailType::String => new StringSchema(
-                    name: $ocrDocumentDetail->name,
-                    description: $ocrDocumentDetail->additional_info_for_ai ?? ''
-                ),
-                DetailType::Number => new NumberSchema(
-                    name: $ocrDocumentDetail->name,
-                    description: $ocrDocumentDetail->additional_info_for_ai ?? ''
-                )
-            };
-        }
 
-        $schema[] = new BooleanSchema(
-            name: 'valid',
-            description: 'Is the text a valid invoice or document transport. If there is text from multiple documents, it is to be considered invalid.'
-        );
-
-        $invoiceSchema = new ObjectSchema(
-            name: 'invoice',
-            description: 'Invoice Schema',
-            properties: $schema,
-        );
+        $invoiceSchema = DetailSchema::generate($user);
 
         $message = new UserMessage(
             'You are provided with image of an invoice or transport documents. Your goal is, given the provided schema,
@@ -156,7 +134,7 @@ class OpenAIService
                     These documents are by italian wholesalers to their customer (which are mostly installers).
                     All dates MUST follow the format d/m/Y.
                     ',
-            [Image::fromPath($document->getFirstMediaPath('combined_document'))]
+            [Image::fromPath($document->getFirstMediaPath('document'))]
         );
         $response = Prism::structured()
             ->using(Provider::OpenAI, 'gpt-4o')
