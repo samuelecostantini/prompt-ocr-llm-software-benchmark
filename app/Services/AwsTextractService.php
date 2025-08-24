@@ -17,10 +17,10 @@ class AwsTextractService implements OCRService
     {
         $textractClient = new TextractClient([
             'version' => 'latest',
-            'region' => config('awstextcract.region'),
+            'region' => config('awstextract.region'),
             'credentials' => [
-                'key' => config('awstextcract.key'),
-                'secret' => config('awstextcract.secret'),
+                'key' => config('awstextract.key'),
+                'secret' => config('awstextract.secret'),
             ],
         ]);
 
@@ -69,7 +69,7 @@ class AwsTextractService implements OCRService
             $avg = $sum / $count;
 
             // Log::channel('bulk-ocr-job')->info("Confidence level avg: ".$avg);
-            dump('confidence level avg: '.$avg);
+            //dump('confidence level avg: '.$avg);
             if ($avg < 80) {
                 return new AwsLowConfidenceError($avg, $filePath);
             }

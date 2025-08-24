@@ -4,10 +4,8 @@ namespace App\Services;
 
 use App\Enums\DetailType;
 use App\Facades\DetailSchema;
-use App\Models\Campaign;
 use App\Models\Document;
 use App\Models\DocumentDetail;
-use App\Models\Invoice;
 use App\Models\User;
 use Prism\Prism\Enums\Provider;
 use Prism\Prism\Prism;
@@ -22,47 +20,24 @@ class OpenAIService
 {
     public function readInvoice(mixed $invoiceText, User $user): array
     {
-        $schema = [];
         /**
+         * @var User $user
          * @var DocumentDetail $documentDetails
          */
-        $documentDetails = $user->documentDetails;
-        foreach ($documentDetails as $ocrDocumentDetail) {
-            $schema[] = match ($ocrDocumentDetail->type) {
-                DetailType::String => new StringSchema(
-                    name: $ocrDocumentDetail->name,
-                    description: $ocrDocumentDetail->additional_info_for_ai ?? ''
-                ),
-                DetailType::Number => new NumberSchema(
-                    name: $ocrDocumentDetail->name,
-                    description: $ocrDocumentDetail->additional_info_for_ai ?? ''
-                )
-            };
-        }
 
-        $schema[] = new BooleanSchema(
-            name: 'valid',
-            description: 'Is the text a valid invoice or document transport. If there is text from multiple documents, it is to be considered invalid.'
-        );
-
-        $invoiceSchema = new ObjectSchema(
-            name: 'invoice',
-            description: 'Invoice Schema',
-            properties: $schema,
-        );
+        $invoiceSchema = DetailSchema::generate($user);
 
         $response = Prism::structured()
             ->using(Provider::OpenAI, 'gpt-4o')
-            ->withSystemPrompt(view('prompts.document', [
-                'invoiceSchema' => json_encode($invoiceSchema),
-                'invoiceText' => json_encode($invoiceText),
-            ]))
             ->withSchema($invoiceSchema)
+            ->withPrompt('
+                You are provided with text extracted from an invoice or transport documents using an OCR system. Your goal is, given the provided schema,
+                to extract details from a document. All of these documents are in italian.
+                Extracted text:
+                """'
+                .$invoiceText.'
+                """')
             ->asStructured();
-        $view = view('prompts.document', [
-            'invoiceSchema' => json_encode($invoiceSchema),
-            'invoiceText' => json_encode($invoiceText),
-        ]);
 
         return $response->structured;
     }
