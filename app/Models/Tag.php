@@ -2,28 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class DocumentDetail extends Model
+class Tag extends Model
 {
-    use HasFactory;
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function extractedFields(): HasMany
+    public function documents(): BelongsToMany
     {
-        return $this->hasMany(ExtractedField::class);
+        return $this->belongsToMany(Document::class,'document_tag');
     }
-
-    public function DetailSet(): BelongsTo{
-        return $this->belongsTo(DetailSet::class);
-    }
-
 }

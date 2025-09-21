@@ -2,19 +2,13 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\DocumentResource\Pages;
-use App\Filament\Resources\DocumentResource\RelationManagers\DocumentDetailsRelationManager;
-use App\Models\Document;
-use App\Models\Prompt;
+use App\Filament\Resources\TagResource\Pages;
 use App\Models\Tag;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
@@ -24,59 +18,60 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
-class DocumentResource extends Resource
+class TagResource extends Resource
 {
-    protected static ?string $model = Document::class;
+    protected static ?string $model = Tag::class;
 
-    protected static ?string $slug = 'documents';
+    protected static ?string $slug = 'tags';
 
-
-    protected static ?string $navigationIcon = 'heroicon-o-document';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Section::make()->schema([
-                    TextInput::make('title'),
+                TextInput::make('title')
+                    ->required()
+                    ->maxLength(255)
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (Set $set, $state) {
+                        $set('slug', Str::slug($state));
+                    }),
+                TextInput::make('slug')
+                    ->required()
+                    ->maxLength(255),
 
-                    SpatieMediaLibraryFileUpload::make('attachment')
-                        ->collection('document'),
+                TextInput::make('description'),
 
-                    Select::make('prompt_id')
-                        ->options(Prompt::all()->pluck('title', 'id')),
-
-                    Select::make('tags')
-                        ->relationship('tags')
-                        ->multiple()
-                        ->options(Tag::all()->pluck('title', 'id')),
-
-                    TextInput::make('user_id')
-                        ->readOnly()
-                        ->default(auth()->user()->id),
-
-                ]),
-
+                TextInput::make('user_id')
+                    ->default(auth()->user()->id)
+                    ->readOnly(),
 
                 Placeholder::make('created_at')
                     ->label('Created Date')
-                    ->content(fn(?Document $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+                    ->content(fn(?Tag $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
                     ->label('Last Modified Date')
-                    ->content(fn(?Document $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                    ->content(fn(?Tag $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('title')
                     ->searchable()
                     ->sortable(),
+
+                TextColumn::make('slug')
+                    ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('description'),
 
                 TextColumn::make('user.name')
                     ->searchable()
@@ -96,18 +91,12 @@ class DocumentResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            DocumentDetailsRelationManager::make()
-        ];
-    }
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListDocuments::route('/'),
-            'create' => Pages\CreateDocument::route('/create'),
-            'edit' => Pages\EditDocument::route('/{record}/edit'),
+            'index' => Pages\ListTags::route('/'),
+            'create' => Pages\CreateTag::route('/create'),
+            'edit' => Pages\EditTag::route('/{record}/edit'),
         ];
     }
 
@@ -118,7 +107,7 @@ class DocumentResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['title', 'user.name'];
+        return ['title', 'slug', 'user.name'];
     }
 
     public static function getGlobalSearchResultDetails(Model $record): array

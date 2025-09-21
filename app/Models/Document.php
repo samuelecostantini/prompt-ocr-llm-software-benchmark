@@ -34,5 +34,8 @@ class Document extends Model implements HasMedia
         return $this->hasMany(ExtractedField::class);
     }
 
+    public function tags(): BelongsToMany {
+        return $this->belongsToMany(Tag::class, 'document_tag');
+    }
 
 }
