@@ -7,14 +7,18 @@ use App\Interfaces\OCRService;
 use Aws\Textract\TextractClient;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use SebastianBergmann\Timer\Exception;
 use setasign\Fpdi\Fpdi;
 use setasign\Fpdi\PdfParser\CrossReference\CrossReferenceException;
 
 
 class AwsTextractService implements OCRService
 {
-    public function textExtractor(string $filePath): string|AwsLowConfidenceError
+    public function textExtractor(string $filePath): string|AwsLowConfidenceError|null
     {
+        Log::channel('extraction')->info('start aws textract service, setting up the TextractClient...');
+
+
         $textractClient = new TextractClient([
             'version' => 'latest',
             'region' => config('awstextract.region'),
@@ -24,30 +28,41 @@ class AwsTextractService implements OCRService
             ],
         ]);
 
-        /*$endDir = storage_path('split'.rand().'/');
+        /*
+        $endDir = storage_path('split'.rand().'/');
+        Log::channel('extraction')->info('final file path after conversion: '.$endDir);
         if (strtolower(pathinfo($filePath, PATHINFO_EXTENSION)) === 'pdf') {
+            Log::channel('extraction')->info('document id a pdf');
             try {
                 $files = $this->splitPdf($filePath, $endDir);
             } catch (CrossReferenceException $e) {
                 $name = Str::replace('/', '-', $filePath);
                 $output_dir = 'storage/app/public/converted-'.$name;
                 dump($output_dir);
-                //shell_exec('gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dNOPAUSE -dQUIET -dBATCH -sOutputFile='.$output_dir.' '.$filePath);
+                shell_exec('gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dNOPAUSE -dQUIET -dBATCH -sOutputFile='.$output_dir.' '.$filePath);
                 $files = $this->splitPdf($output_dir, $endDir);
             }
         } else {
             $files = [$filePath];
-        }*/
+        }
+        */
 
         $cellMap = [];
         $rawLines = [];
         $formFields = [];
 
-        //foreach ($files as $file) {
+        Log::channel('extraction')->info('open file at path: '. $filePath);
+
+
+        try {
             $fp_image = fopen($filePath, 'rb');
             $image = fread($fp_image, filesize($filePath));
             fclose($fp_image);
+        } catch (Exception $e){
+            Log::channel('extraction')->error('fopen error: '.$e->getMessage());
+        }
 
+        try {
             $result = $textractClient->analyzeDocument(
                 [
                     'Document' => [
@@ -56,28 +71,37 @@ class AwsTextractService implements OCRService
                     'FeatureTypes' => ['TABLES', 'FORMS'],
                 ]
             );
-
-            $blocks = $result['Blocks'];
-            $sum = 0;
-            $count = 0;
-            foreach ($blocks as $block) {
-                if (isset($block['Confidence'])) {
-                    $sum += $block['Confidence'];
-                    $count++;
-                }
+        } catch (Exception $e){
+            Log::channel('extraction')->error('analyzeDocument error: '.$e->getMessage());
+            return null;
+        }
+        Log::channel('extraction')->info('analyzeDocument success');
+        $blocks = $result['Blocks'];
+        $sum = 0;
+        $count = 0;
+        foreach ($blocks as $block) {
+            if (isset($block['Confidence'])) {
+                $sum += $block['Confidence'];
+                $count++;
             }
-            $avg = $sum / $count;
+        }
 
-            // Log::channel('bulk-ocr-job')->info("Confidence level avg: ".$avg);
-            //dump('confidence level avg: '.$avg);
-            if ($avg < 80) {
-                return new AwsLowConfidenceError($avg, $filePath);
-            }
+        $avg = $sum / $count;
 
-            $cellMap = array_merge($cellMap, $this->extractTablesCells($blocks));
-            $formFields = array_merge($formFields, $this->extractFormFields($blocks));
-            $rawLines = array_merge($rawLines, $this->extractRawLines($blocks));
-        //}
+        Log::channel('extraction')->info("confidence level avg: ".$avg);
+        //dump('confidence level avg: '.$avg);
+        if ($avg < 80) {
+            Log::channel('extraction')->error("low confidence");
+            return new AwsLowConfidenceError($avg, $filePath);
+        }
+
+        $cellMap = array_merge($cellMap, $this->extractTablesCells($blocks));
+        Log::channel('extraction')->info('$cellMap: '.json_encode($cellMap));
+        $formFields = array_merge($formFields, $this->extractFormFields($blocks));
+        Log::channel('extraction')->info('$formFields: '.json_encode($formFields));
+        $rawLines = array_merge($rawLines, $this->extractRawLines($blocks));
+        Log::channel('extraction')->info('$rawLines'.json_encode($rawLines));
+
 
         return json_encode([
             'cellMap' => $cellMap,
@@ -274,6 +298,7 @@ class AwsTextractService implements OCRService
 
     public function splitPdf($filename, $end_directory = false)
     {
+
         $end_directory = $end_directory ? $end_directory : './';
         $new_path = preg_replace('/[\/]+/', '/', $end_directory.'/'.substr($filename, 0, strrpos($filename, '/')));
 

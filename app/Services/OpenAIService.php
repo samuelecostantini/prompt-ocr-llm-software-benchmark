@@ -6,7 +6,10 @@ use App\Enums\DetailType;
 use App\Facades\DetailSchema;
 use App\Models\Document;
 use App\Models\DocumentDetail;
+use App\Models\ExtractionResult;
+use App\Models\Prompt;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use Prism\Prism\Enums\Provider;
 use Prism\Prism\Prism;
 use Prism\Prism\Schema\BooleanSchema;
@@ -18,80 +21,38 @@ use Prism\Prism\ValueObjects\Messages\UserMessage;
 
 class OpenAIService
 {
-    public function readInvoice(mixed $invoiceText, User $user): array
+    public function readInvoice(mixed $invoiceText, User $user, ?Prompt $prompt): array
     {
         /**
          * @var User $user
          * @var DocumentDetail $documentDetails
          */
+        Log::channel('extraction')->info('starting OpenAiService -> readInvoice...');
 
         $invoiceSchema = DetailSchema::generate($user);
 
-        $response = Prism::structured()
-            ->using(Provider::OpenAI, 'gpt-4o')
-            ->withSchema($invoiceSchema)
-            ->withPrompt('
-                You are provided with text extracted from an invoice or transport documents using an OCR system. Your goal is, given the provided schema,
-                to extract details from a document. All of these documents are in italian.
-                Extracted text:
-                """'
-                .$invoiceText.'
-                """')
-            ->asStructured();
+        Log::channel('extraction')->info('invoice schema used: '.json_encode($invoiceSchema));
 
-        return $response->structured;
-    }
+        $defaultPrompt = 'You are provided with text extracted from an invoice or transport documents using an OCR system. Your goal is, given the provided schema,
+                to extract details from a document. All of these documents are in italian. ';
 
-    public function compareAiDataWithDeclaredData(array $aiData, array $declaredData): array
-    {
-        $schema = [];
-        foreach ($declaredData as $key => $value) {
-            $schema[] = new BooleanSchema(
-                name: $key,
-                description: 'Whether the value of the field is the same as the value of the field in the invoice.'
-            );
-        }
-
-        $invoiceSchema = new ObjectSchema(
-            name: 'invoice',
-            description: 'Invoice Schema',
-            properties: $schema,
-        );
+        Log::channel('extraction')->info('setting up OpenAi api call with prism');
+        Log::channel('extraction')->info('prompt: '. $prompt?->title? : 'default prompt');
 
         $response = Prism::structured()
             ->using(Provider::OpenAI, 'gpt-4o')
             ->withSchema($invoiceSchema)
-            ->withSystemPrompt(view('prompts.invoice-compare-data', [
-                'aiData' => $aiData,
-                'declaredData' => $declaredData,
-            ]))
+            ->withPrompt(
+                $prompt->text
+                ?? $defaultPrompt
+                .'Extracted text: """'
+                .$invoiceText.'"""'
+            )
             ->asStructured();
+        Log::channel('extraction')->info('response: '.json_encode($response->structured));
 
         return $response->structured;
     }
-
-    /*public function generateTests(ObjectSchema $test_schema, string $test_case, string $validations, string $additional_description): array
-    {
-        return Prism::structured()
-            ->using(Provider::OpenAI, 'gpt-4o')
-            ->withSchema($test_schema)
-            ->withSystemPrompt('Return a valid JSON example that complies with this schema.
-                                Each key in the returned object must match a field name from the model defined in the schema.
-                                The values must be simple test strings or valid examples (e.g., “Test Name”, “test@example.com”, “123456”).
-                                This output will be used to auto-fill a form during automated tests, so it should be:
-                                    •	Fully JSON-valid ✅
-                                    •	Match the types specified in the schema ✅
-                                    •	Contain at least one test value per property ✅
-
-                                Rules you have to follow:
-                                    1. Generate tests for this test case: '.$test_case.'.
-                                    2. Respect this validations: '.$validations.'.
-                                    3. Additional description: '.$additional_description.'.
-
-                                ⚠️ Return only the final JSON object. Do not include code comments, descriptions, or explanations.')
-            ->asStructured()
-            ->structured;
-    }*/
 
     public function readInvoiceFromImg(Document $document): array
     {

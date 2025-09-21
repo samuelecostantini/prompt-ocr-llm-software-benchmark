@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ExtractionResultResource\Pages;
+use App\Models\Document;
 use App\Models\ExtractionResult;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TextInput;
@@ -44,7 +45,12 @@ class ExtractionResultResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('id'),
                 TextColumn::make('result'),
+                TextColumn::make('document_id')
+                    ->getStateUsing(fn (?ExtractionResult $record) => Document::find($record->document_id)->name ?? '-'),
+                TextColumn::make('prompt_id')
+                    ->getStateUsing(fn (?ExtractionResult $record) => Document::find($record->prompt_id)->title ?? '-'),
             ])
             ->filters([
                 //

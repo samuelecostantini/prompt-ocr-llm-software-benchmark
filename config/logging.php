@@ -127,6 +127,11 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'extraction' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/extraction.log'),
+        ]
+
     ],
 
 ];

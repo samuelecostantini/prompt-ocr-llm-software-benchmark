@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('extracted_fields', function (Blueprint $table) {
-            $table->string('value')->change();
+        Schema::table('prompts', function (Blueprint $table) {
+            $table->string('slug')->after('title');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('extracted_fields', function (Blueprint $table) {
+        Schema::table('prompts', function (Blueprint $table) {
             //
         });
     }

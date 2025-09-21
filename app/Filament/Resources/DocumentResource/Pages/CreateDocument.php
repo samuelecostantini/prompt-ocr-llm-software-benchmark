@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\DocumentResource\Pages;
 
+use App\Actions\RunExtractionAction;
 use App\Filament\Resources\DocumentResource;
 use App\Models\Document;
 use App\Models\DocumentDetail;
@@ -35,21 +36,9 @@ class CreateDocument extends CreateRecord
          */
 
         $record = $this->getRecord();
-
         $document = Document::find($record->id);
-
-        $extracted_text = app(AwsTextractService::class)->textExtractor($document->getFirstMediaPath('document'));
-        //$structured_result = app(OpenAIService::class)->readInvoiceFromImg($document);
-        $structured_result = app(OpenAIService::class)->readInvoice($extracted_text, auth()->user());
-
-        foreach ($structured_result as $key => $result) {
-
-            $document_detail_id = DocumentDetail::whereName($key)->first()->id;
-            $document->extractedFields()->create([
-                'document_detail_id' => $document_detail_id,
-                'value' => $result,
-            ]);
-        }
+        $newExtraction = new RunExtractionAction();
+        $newExtraction->handle($document);
 
     }
 }
