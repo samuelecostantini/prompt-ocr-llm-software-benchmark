@@ -2,11 +2,17 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\DetailType;
 use App\Filament\Resources\DetailSetResource\Pages;
 use App\Models\DetailSet;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
@@ -21,8 +27,8 @@ class DetailSetResource extends Resource
     protected static ?string $model = DetailSet::class;
 
     protected static ?string $slug = 'detail-sets';
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationIcon = 'heroicon-o-inbox-stack';
 
     public static function form(Form $form): Form
     {
@@ -30,14 +36,39 @@ class DetailSetResource extends Resource
             ->schema([
                 TextInput::make('title')
                     ->required()
-                    ->reactive()
-                    ->afterStateUpdated(fn($state, callable $set) => $set('slug', Str::slug($state))),
+                    ->maxLength(255)
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (Set $set, $state) {
+                        $set('slug', Str::slug($state));
+                    }),
 
                 TextInput::make('slug')
-                    ->disabled()
                     ->required()
-                    ->unique(DetailSet::class, 'slug', fn($record) => $record),
+                    ->maxLength(255),
 
+                Repeater::make('documentDetails')
+                    ->schema([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (Set $set, $state) {
+                                $set('slug', Str::slug($state));
+                            }),
+                        TextInput::make('slug')
+                            ->required()
+                            ->maxLength(255),
+
+                        Select::make('type')
+                            ->options(DetailType::class),
+                        Textarea::make('additional_info_for_prompt')
+                            ->columnSpanFull(),
+
+                        Checkbox::make('nullable')
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull()
+                ->relationship('documentDetails'),
                 Placeholder::make('created_at')
                     ->label('Created Date')
                     ->content(fn(?DetailSet $record): string => $record?->created_at?->diffForHumans() ?? '-'),

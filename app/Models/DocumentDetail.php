@@ -22,7 +22,7 @@ class DocumentDetail extends Model
         return $this->hasMany(ExtractedField::class);
     }
 
-    public function DetailSet(): BelongsTo{
+    public function detailSet(): BelongsTo{
         return $this->belongsTo(DetailSet::class);
     }
 

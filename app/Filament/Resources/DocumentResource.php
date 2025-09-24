@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\DocumentResource\Pages;
 use App\Filament\Resources\DocumentResource\RelationManagers\DocumentDetailsRelationManager;
+use App\Models\DetailSet;
 use App\Models\Document;
 use App\Models\Prompt;
 use App\Models\Tag;
@@ -31,7 +32,7 @@ class DocumentResource extends Resource
 
     protected static ?string $slug = 'documents';
 
-
+    protected static ?int $navigationSort = 0;
     protected static ?string $navigationIcon = 'heroicon-o-document';
 
     public static function form(Form $form): Form
@@ -47,12 +48,17 @@ class DocumentResource extends Resource
                     Select::make('prompt_id')
                         ->options(Prompt::all()->pluck('title', 'id')),
 
+                    Select::make('detail_set_id')
+                        ->default(DetailSet::all()->first->pluck('title', 'id'))
+                        ->options(DetailSet::all()->pluck('title', 'id')),
+
                     Select::make('tags')
                         ->relationship('tags')
                         ->multiple()
                         ->options(Tag::all()->pluck('title', 'id')),
 
-                    TextInput::make('user_id')
+                    TextInput::make('user.id')
+                        ->hidden()
                         ->readOnly()
                         ->default(auth()->user()->id),
 

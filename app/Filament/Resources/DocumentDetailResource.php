@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\DetailType;
 use App\Filament\Resources\DocumentDetailResource\Pages;
+use App\Models\DetailSet;
 use App\Models\DocumentDetail;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Placeholder;
@@ -12,6 +13,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
@@ -29,6 +31,8 @@ class DocumentDetailResource extends Resource
 
     protected static ?string $slug = 'document-details';
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $navigationIcon = 'heroicon-o-document-magnifying-glass';
 
     public static function form(Form $form): Form
@@ -38,20 +42,23 @@ class DocumentDetailResource extends Resource
             ->schema([
                 TextInput::make('name')
                     ->required()
-                    ->reactive()
-                    ->debounce()
-                    ->afterStateUpdated(fn($state, callable $set) => $set('slug', Str::slug($state))),
-
+                    ->maxLength(255)
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (Set $set, $state) {
+                        $set('slug', Str::slug($state));
+                    }),
                 TextInput::make('slug')
-                    ->disabled()
-                    ->debounce()
-                    ->nullable(),
+                    ->required()
+                    ->maxLength(255),
 
                 Select::make('type')
                     ->options(DetailType::class),
 
-                TextInput::make('user_id')
+                Select::make('detail_set_id')
+                    ->options(DetailSet::all()->pluck('title', 'id')),
 
+                TextInput::make('user_id')
+                    ->readonly()
                     ->default(auth()->user()->id),
 
                 Textarea::make('additional_info_for_prompt')
@@ -87,9 +94,7 @@ class DocumentDetailResource extends Resource
 
                 TextColumn::make('nullable'),
 
-                TextColumn::make('user.name')
-                    ->searchable()
-                    ->sortable(),
+                TextColumn::make('detailSet.title'),
 
                 TextColumn::make('additional_info_for_prompt'),
             ])

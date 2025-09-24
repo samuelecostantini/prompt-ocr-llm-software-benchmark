@@ -38,4 +38,9 @@ class Document extends Model implements HasMedia
         return $this->belongsToMany(Tag::class, 'document_tag');
     }
 
+    public function detailSet(): hasOne
+    {
+        return $this->hasOne(DetailSet::class);
+    }
+
 }

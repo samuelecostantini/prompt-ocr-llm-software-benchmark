@@ -29,8 +29,8 @@ class PromptResource extends Resource
     protected static ?string $model = Prompt::class;
 
     protected static ?string $slug = 'prompts';
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?int $navigationSort = 3;
+    protected static ?string $navigationIcon = 'heroicon-o-sparkles';
 
     public static function form(Form $form): Form
     {

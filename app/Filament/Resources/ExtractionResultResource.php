@@ -21,8 +21,8 @@ class ExtractionResultResource extends Resource
     protected static ?string $model = ExtractionResult::class;
 
     protected static ?string $slug = 'extraction-results';
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?int $navigationSort = 5;
+    protected static ?string $navigationIcon = 'heroicon-o-bars-arrow-down';
 
     public static function form(Form $form): Form
     {
