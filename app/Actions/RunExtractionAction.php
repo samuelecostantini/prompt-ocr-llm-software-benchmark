@@ -18,7 +18,7 @@ class RunExtractionAction
         Log::channel('extraction')->info('document at path: '.$document->getFirstMediaPath('document'));
         $extracted_text = app(AwsTextractService::class)->textExtractor($document->getFirstMediaPath('document'));
 
-        $structured_result = app(OpenAIService::class)->readInvoice($extracted_text, auth()->user(), $document->prompt);
+        $structured_result = app(OpenAIService::class)->readInvoice($extracted_text, $document);
 
         foreach ($structured_result as $key => $result) {
 

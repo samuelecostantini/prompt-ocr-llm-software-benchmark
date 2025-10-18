@@ -49,7 +49,6 @@ class DocumentResource extends Resource
                         ->options(Prompt::all()->pluck('title', 'id')),
 
                     Select::make('detail_set_id')
-                        ->default(DetailSet::all()->first->pluck('title', 'id'))
                         ->options(DetailSet::all()->pluck('title', 'id')),
 
                     Select::make('tags')
@@ -57,8 +56,7 @@ class DocumentResource extends Resource
                         ->multiple()
                         ->options(Tag::all()->pluck('title', 'id')),
 
-                    TextInput::make('user.id')
-                        ->hidden()
+                    TextInput::make('user_id')
                         ->readOnly()
                         ->default(auth()->user()->id),
 

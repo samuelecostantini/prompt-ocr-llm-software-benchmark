@@ -9,6 +9,7 @@ use Faker\Core\Number;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -47,7 +48,7 @@ class PromptResource extends Resource
                     ->required()
                     ->maxLength(255),
 
-                MarkdownEditor::make('text')
+                Textarea::make('text')
                     ->columnSpanFull(),
 
                 TextInput::make('user_id')

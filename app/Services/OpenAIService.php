@@ -21,15 +21,19 @@ use Prism\Prism\ValueObjects\Messages\UserMessage;
 
 class OpenAIService
 {
-    public function readInvoice(mixed $invoiceText, User $user, ?Prompt $prompt): array
+    public function readInvoice(mixed $invoiceText, Document $document): array
     {
         /**
          * @var User $user
          * @var DocumentDetail $documentDetails
+         * @var Prompt $prompt
          */
+
         Log::channel('extraction')->info('starting OpenAiService -> readInvoice...');
 
-        $invoiceSchema = DetailSchema::generate($user);
+        $prompt = $document->prompt;
+
+        $invoiceSchema = DetailSchema::generate($document);
 
         Log::channel('extraction')->info('invoice schema used: '.json_encode($invoiceSchema));
 

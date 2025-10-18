@@ -3,9 +3,11 @@
 namespace App\Filament\Resources;
 
 use App\Enums\DetailType;
+use App\Filament\Imports\DocumentDetailImporter;
 use App\Filament\Resources\DocumentDetailResource\Pages;
 use App\Models\DetailSet;
 use App\Models\DocumentDetail;
+use Filament\Actions\ImportAction;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
@@ -31,7 +33,7 @@ class DocumentDetailResource extends Resource
 
     protected static ?string $slug = 'document-details';
 
-    protected static bool $shouldRegisterNavigation = false;
+    protected static bool $shouldRegisterNavigation = true;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-magnifying-glass';
 
@@ -104,6 +106,10 @@ class DocumentDetailResource extends Resource
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
+            ])
+            ->headerActions([
+                \Filament\Tables\Actions\ImportAction::make()
+                    ->importer(DocumentDetailImporter::class)
             ])
             ->bulkActions([
                 BulkActionGroup::make([

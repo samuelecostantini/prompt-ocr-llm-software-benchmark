@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\DetailType;
+use App\Models\Document;
 use App\Models\User;
 use Prism\Prism\Schema\BooleanSchema;
 use Prism\Prism\Schema\NumberSchema;
@@ -11,12 +12,13 @@ use Prism\Prism\Schema\StringSchema;
 
 class DetailSchemaService
 {
-    public function generate(User $user): ObjectSchema
+    public function generate(Document $document): ObjectSchema
     {
 
         $schema = [];
 
-        $documentDetails = $user->documentDetails;
+
+        $documentDetails = $document->detailSet->documentDetails;
 
         foreach ($documentDetails as $ocrDocumentDetail) {
             $schema[] = match ($ocrDocumentDetail->type) {

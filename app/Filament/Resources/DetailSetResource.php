@@ -34,6 +34,7 @@ class DetailSetResource extends Resource
     {
         return $form
             ->schema([
+                TextInput::make('id'),
                 TextInput::make('title')
                     ->required()
                     ->maxLength(255)
@@ -83,6 +84,7 @@ class DetailSetResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('id'),
                 TextColumn::make('title')
                     ->searchable()
                     ->sortable(),

@@ -11,4 +11,9 @@ class DetailSet extends Model
     {
         return $this->hasMany(DocumentDetail::class);
     }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Document::class);
+    }
 }
