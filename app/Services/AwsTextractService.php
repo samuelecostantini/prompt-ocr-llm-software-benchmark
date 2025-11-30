@@ -192,7 +192,7 @@ class AwsTextractService implements OCRService
         // === Extract Form Fields ===
         $formFields = [];
 
-        foreach ($keyMap as $keyBlockId => $keyBlock) {
+        foreach ($keyMap as $keyBlock) {
             $keyText = $this->getTextFromRelationships($keyBlock, $blockMap);
 
             $valueText = '';
@@ -221,7 +221,7 @@ class AwsTextractService implements OCRService
     public function extractRawLines(array $blocks): array
     {
         $rawLines = [];
-        foreach ($blocks as $key => $value) {
+        foreach ($blocks as $value) {
             if (isset($value['BlockType']) && $value['BlockType'] == 'LINE') {
                 if (isset($value['Text']) && $value['Text']) {
                     $text = $value['Text'];
@@ -262,7 +262,7 @@ class AwsTextractService implements OCRService
 
         $text_for_prompt = '';
 
-        foreach ($blocks as $key => $value) {
+        foreach ($blocks as $value) {
             if (isset($value['BlockType']) && $value['BlockType']) {
                 if (isset($value['Text']) && $value['Text']) {
                     $text = $value['Text'];

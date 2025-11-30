@@ -27,7 +27,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName('Extract documents data AI agent')
+            ->brandName('OCR-LLM Prompts Benchmark')
             ->colors([
                 'primary' => Color::Blue,
             ])

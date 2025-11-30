@@ -26,10 +26,6 @@ class Document extends Model implements HasMedia
             ->singleFile();
     }
 
-    public function prompt(): BelongsTo{
-        return $this->belongsTo(Prompt::class);
-    }
-
     public function extractedFields(): HasMany {
         return $this->hasMany(ExtractedField::class);
     }
@@ -43,4 +39,13 @@ class Document extends Model implements HasMedia
         return $this->belongsTo(DetailSet::class);
     }
 
+    public function runs(): HasMany
+    {
+        return $this->hasMany(Run::class);
+    }
+
+    public function groundTruths(): HasMany
+    {
+        return $this->hasMany(GroundTruth::class, 'document_id');
+    }
 }

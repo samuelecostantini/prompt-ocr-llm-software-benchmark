@@ -19,4 +19,9 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
+Route::get('/benchmark-configuration/{document:id}', function (\App\Models\Document $document) {
+    return redirect(\App\Filament\Pages\BenchmarkConfiguration::getUrl(['document_id' => $document->id]));
+}
+)->name('benchmark');
+
 require __DIR__.'/auth.php';

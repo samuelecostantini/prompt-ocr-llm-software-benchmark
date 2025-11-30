@@ -2,13 +2,12 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TagResource\Pages;
-use App\Models\Tag;
+use App\Filament\Resources\GroundTruthResource\Pages;
+use App\Models\GroundTruth;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
@@ -18,44 +17,39 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
-class TagResource extends Resource
+class GroundTruthResource extends Resource
 {
-    protected static ?string $model = Tag::class;
+    protected static ?string $model = GroundTruth::class;
 
-    protected static ?string $slug = 'tags';
-    protected static ?int $navigationSort = 4;
-    protected static ?string $navigationIcon = 'heroicon-o-tag';
+    protected static ?string $slug = 'ground-truths';
+
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                TextInput::make('title')
-                    ->required()
-                    ->maxLength(255)
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(function (Set $set, $state): void {
-                        $set('slug', Str::slug($state));
-                    }),
-                TextInput::make('slug')
-                    ->required()
-                    ->maxLength(255),
+                Select::make('document_id')
+                    ->relationship('document', 'title')
+                    ->searchable()
+                    ->required(),
 
-                TextInput::make('description'),
+                Select::make('document_detail_id')
+                    ->relationship('documentDetail', 'name')
+                    ->searchable()
+                    ->required(),
 
-                TextInput::make('user_id')
-                    ->default(auth()->user()->id)
-                    ->readOnly(),
+                TextInput::make('value')
+                    ->required(),
 
                 Placeholder::make('created_at')
                     ->label('Created Date')
-                    ->content(fn(?Tag $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+                    ->content(fn(?GroundTruth $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
                     ->label('Last Modified Date')
-                    ->content(fn(?Tag $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                    ->content(fn(?GroundTruth $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }
 
@@ -63,19 +57,15 @@ class TagResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('title')
+                TextColumn::make('document.title')
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('slug')
+                TextColumn::make('documentDetail.name')
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('description'),
-
-                TextColumn::make('user.name')
-                    ->searchable()
-                    ->sortable(),
+                TextColumn::make('value'),
             ])
             ->filters([
                 //
@@ -94,28 +84,32 @@ class TagResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTags::route('/'),
-            'create' => Pages\CreateTag::route('/create'),
-            'edit' => Pages\EditTag::route('/{record}/edit'),
+            'index' => Pages\ListGroundTruths::route('/'),
+            'create' => Pages\CreateGroundTruth::route('/create'),
+            'edit' => Pages\EditGroundTruth::route('/{record}/edit'),
         ];
     }
 
     public static function getGlobalSearchEloquentQuery(): Builder
     {
-        return parent::getGlobalSearchEloquentQuery()->with(['user']);
+        return parent::getGlobalSearchEloquentQuery()->with(['document', 'documentDetail']);
     }
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['title', 'slug', 'user.name'];
+        return ['document.title', 'documentDetail.name'];
     }
 
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         $details = [];
 
-        if ($record->user) {
-            $details['User'] = $record->user->name;
+        if ($record->document) {
+            $details['Document'] = $record->document->title;
+        }
+
+        if ($record->documentDetail) {
+            $details['DocumentDetail'] = $record->documentDetail->name;
         }
 
         return $details;

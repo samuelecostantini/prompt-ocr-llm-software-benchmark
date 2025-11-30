@@ -17,5 +17,8 @@ class ExtractedField extends Model
     public function document_detail(): BelongsTo {
         return $this->belongsTo(DocumentDetail::class);
     }
+    public function run(): BelongsTo {
+        return $this->belongsTo(Run::class);
+    }
 
 }

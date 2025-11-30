@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Models\Document;
 use App\Models\DocumentDetail;
 use App\Models\ExtractionResult;
+use App\Models\Run;
 use App\Models\User;
 use App\Services\AwsTextractService;
 use App\Services\OpenAIService;
@@ -12,14 +13,14 @@ use Illuminate\Support\Facades\Log;
 
 class RunExtractionAction
 {
-    public function handle(Document $document): void
+    public function handle(Run $run): void
     {
+        $document = $run->document;
         Log::channel('extraction')->info('starting extraction of document id: '.$document->id);
         Log::channel('extraction')->info('document at path: '.$document->getFirstMediaPath('document'));
         $extracted_text = app(AwsTextractService::class)->textExtractor($document->getFirstMediaPath('document'));
-
-        $structured_result = app(OpenAIService::class)->readInvoice($extracted_text, $document);
-
+        $structured_result = app(OpenAIService::class)->readInvoice($extracted_text, $run);
+        Log::channel('extraction')->info('$structured_result: '.json_encode($structured_result, JSON_PRETTY_PRINT));
         foreach ($structured_result as $key => $result) {
 
             $document_detail_id = DocumentDetail::whereName($key)->first()->id;

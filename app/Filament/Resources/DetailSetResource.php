@@ -39,7 +39,7 @@ class DetailSetResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->live(onBlur: true)
-                    ->afterStateUpdated(function (Set $set, $state) {
+                    ->afterStateUpdated(function (Set $set, $state): void {
                         $set('slug', Str::slug($state));
                     }),
 
@@ -53,7 +53,7 @@ class DetailSetResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(function (Set $set, $state) {
+                            ->afterStateUpdated(function (Set $set, $state): void {
                                 $set('slug', Str::slug($state));
                             }),
                         TextInput::make('slug')

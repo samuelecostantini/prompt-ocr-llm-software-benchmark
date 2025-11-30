@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Actions\RunExtractionAction;
+use App\Filament\Pages\BenchmarkConfiguration;
 use App\Filament\Resources\DocumentResource\Pages;
 use App\Filament\Resources\DocumentResource\RelationManagers\DocumentDetailsRelationManager;
 use App\Models\DetailSet;
@@ -17,6 +19,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -25,6 +28,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use PhpParser\Comment\Doc;
 
 class DocumentResource extends Resource
 {
@@ -45,9 +49,6 @@ class DocumentResource extends Resource
                     SpatieMediaLibraryFileUpload::make('attachment')
                         ->collection('document'),
 
-                    Select::make('prompt_id')
-                        ->options(Prompt::all()->pluck('title', 'id')),
-
                     Select::make('detail_set_id')
                         ->options(DetailSet::all()->pluck('title', 'id')),
 
@@ -61,7 +62,6 @@ class DocumentResource extends Resource
                         ->default(auth()->user()->id),
 
                 ]),
-
 
                 Placeholder::make('created_at')
                     ->label('Created Date')
@@ -92,7 +92,15 @@ class DocumentResource extends Resource
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
+                Action::make('Benchmark')
+                    ->icon('heroicon-o-chart-bar')
+                    ->url(fn (Document $record): string => route('benchmark', ['document' => $record])),
+                Action::make('Rerun extraction')
+                    ->label('Rerun extraction')
+                    ->modal(true)
+                    ->modalContent()
             ])
+            //->recordAction(fn (Document $record) => redirect(route('benchmark', ['document' => $record])))
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
