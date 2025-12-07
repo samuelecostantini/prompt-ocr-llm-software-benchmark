@@ -5,9 +5,7 @@ namespace App\Filament\Pages;
 use App\Filament\Resources\DocumentResource\RelationManagers\GroundTruthsRelationManager;
 use App\Models\Document;
 use Filament\Pages\Page;
-use Filament\Resources\Concerns\InteractsWithRelationshipTable;
 use Filament\Resources\Pages\Concerns\HasRelationManagers;
-use Filament\Resources\RelationManagers\RelationManager;
 use JetBrains\PhpStorm\NoReturn;
 
 class BenchmarkConfiguration extends Page
@@ -15,9 +13,12 @@ class BenchmarkConfiguration extends Page
     use HasRelationManagers;
 
     public Document $document;
+
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static string $view = 'filament.pages.benchmark-configuration';
+
+    protected static bool $shouldRegisterNavigation = false;
 
     #[NoReturn]
     public function mount(): void

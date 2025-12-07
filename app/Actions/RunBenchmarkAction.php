@@ -2,51 +2,47 @@
 
 namespace App\Actions;
 
+use App\Facades\Evaluation;
+use App\Models\BenchmarkResult;
 use App\Models\Document;
-use App\Models\DocumentDetail;
-use App\Models\ExtractionResult;
-use App\Models\Prompt;
 use App\Models\Run;
-use App\Models\User;
-use App\Models\ExtractedField;
-use App\Services\AwsTextractService;
-use App\Services\OpenAIService;
-use Illuminate\Support\Facades\Log;
 
 class RunBenchmarkAction
 {
-    public static function handle(): void
+    public static function handle()
     {
-        foreach (Run::all() as $run) {
-            Log::channel('benchmark')->info('starting benchmark of run id: '.$run->id);
+        foreach (Document::all() as $document) {
+            foreach (Run::all() as $run) {
+                foreach ($run->extractedFields as $extractedField) {
 
-            $extracted_fields = ExtractedField::where('run_id', $run->id)->get();
-            $ground_truth_fields = $run->document->groundTruths;
+                    $groundThrut = $document->groundTruths()->where('document_detail_id', $extractedField->document_detail_id)->first();
 
-            $total_fields = count($ground_truth_fields);
-            $correct_fields = 0;
+                    $score = Evaluation::computeScore($extractedField->value, $groundThrut ? $groundThrut->value : '', $extractedField->document_detail->type);
 
-            foreach ($ground_truth_fields as $ground_truth_field) {
-                $extracted_field = $extracted_fields->firstWhere('document_detail_id', $ground_truth_field->document_detail_id);
-                if ($extracted_field && $extracted_field->value === $ground_truth_field->value) {
-                    $correct_fields++;
+                    $groundThrut = $document->groundTruths()->where('document_detail_id', $extractedField->document_detail_id)->first();
+                    BenchmarkResult::create([
+                        'run_id' => $run->id,
+                        'extracted_field_id' => $extractedField->document_detail_id,
+                        'extracted_value' => $extractedField->value,
+                        'expected_value' => $groundThrut ? $groundThrut->value : '',
+                        'score' => $score,
+                    ]);
                 }
             }
-
-            $accuracy = $total_fields > 0 ? ($correct_fields / $total_fields) * 100 : 0;
-
-            Log::channel('benchmark')->info('Run ID: '.$run->id.' - Accuracy: '.number_format($accuracy, 2).'% ('.$correct_fields.'/'.$total_fields.')');
-
-            \App\Models\BenchmarkResult::create([
-                'run_id' => $run->id,
-                'accuracy' => $accuracy,
-                'total_fields' => $total_fields,
-                'correct_fields' => $correct_fields,
-            ]);
-
-            Log::channel('benchmark')->info('benchmark ended for run id: '.$run->id);
-            Log::channel('benchmark')->info('___________________________________________________________________');
-            Log::channel('benchmark')->info('___________________________________________________________________');
         }
+    }
+
+    public function calculateScore($extractedValue, $expectedValue)
+    {
+        $extractedValue = trim(strtolower($extractedValue));
+        $expectedValue = trim(strtolower($expectedValue));
+
+        if ($extractedValue === $expectedValue) {
+            return 1.0; // Perfect match
+        }
+
+        similar_text($extractedValue, $expectedValue, $percent);
+
+        return $percent / 100;
     }
 }

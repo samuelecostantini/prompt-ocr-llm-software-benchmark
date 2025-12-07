@@ -12,6 +12,7 @@ class AwsTextractTest extends Command
      * @var string
      */
     protected $signature = 'test:textract';
+
     /**
      * The console command description.
      *

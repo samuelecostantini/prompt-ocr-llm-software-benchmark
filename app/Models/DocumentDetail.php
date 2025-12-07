@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DocumentDetail extends Model
@@ -22,8 +21,8 @@ class DocumentDetail extends Model
         return $this->hasMany(ExtractedField::class);
     }
 
-    public function detailSet(): BelongsTo{
+    public function detailSet(): BelongsTo
+    {
         return $this->belongsTo(DetailSet::class);
     }
-
 }

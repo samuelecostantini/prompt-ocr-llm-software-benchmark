@@ -21,8 +21,12 @@ class ExtractionResultResource extends Resource
     protected static ?string $model = ExtractionResult::class;
 
     protected static ?string $slug = 'extraction-results';
+
     protected static ?int $navigationSort = 5;
+
     protected static ?string $navigationIcon = 'heroicon-o-bars-arrow-down';
+
+    protected static bool $shouldRegisterNavigation = false;
 
     public static function form(Form $form): Form
     {
@@ -33,11 +37,11 @@ class ExtractionResultResource extends Resource
 
                 Placeholder::make('created_at')
                     ->label('Created Date')
-                    ->content(fn(?ExtractionResult $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?ExtractionResult $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
                     ->label('Last Modified Date')
-                    ->content(fn(?ExtractionResult $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?ExtractionResult $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }
 

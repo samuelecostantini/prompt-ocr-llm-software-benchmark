@@ -2,15 +2,12 @@
 
 namespace App\Filament\Resources\DocumentResource\RelationManagers;
 
-use App\Filament\Resources\PromptResource;
 use App\Models\Prompt;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class RunsRelationManager extends RelationManager
 {
@@ -21,7 +18,7 @@ class RunsRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\Select::make('prompt_id')
-                    ->options(fn(): array => Prompt::all()->pluck('title', 'id')->toArray())
+                    ->options(fn (): array => Prompt::all()->pluck('title', 'id')->toArray()),
 
             ]);
     }

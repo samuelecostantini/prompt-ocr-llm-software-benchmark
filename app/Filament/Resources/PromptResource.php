@@ -4,15 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PromptResource\Pages;
 use App\Models\Prompt;
-use App\Models\User;
-use Faker\Core\Number;
-use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\BulkActionGroup;
@@ -30,7 +25,9 @@ class PromptResource extends Resource
     protected static ?string $model = Prompt::class;
 
     protected static ?string $slug = 'prompts';
+
     protected static ?int $navigationSort = 3;
+
     protected static ?string $navigationIcon = 'heroicon-o-sparkles';
 
     public static function form(Form $form): Form
@@ -57,11 +54,11 @@ class PromptResource extends Resource
 
                 Placeholder::make('created_at')
                     ->label('Created Date')
-                    ->content(fn(?Prompt $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?Prompt $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
                     ->label('Last Modified Date')
-                    ->content(fn(?Prompt $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?Prompt $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }
 
@@ -85,20 +82,20 @@ class PromptResource extends Resource
                 DeleteAction::make(),
             ])
             ->headerActions([
-                    /** devo fare un bulk run per testare i prompt */
+                /** devo fare un bulk run per testare i prompt */
                 \Filament\Tables\Actions\Action::make(name: 'bulk_run')
                     ->label('Run Bulk Extraction')
                     ->action(function (): void {
                         // Dispatch the BulkRunJob
-                        \App\Jobs\BulkRunJob::dispatch(new \App\Models\Run());
+                        \App\Jobs\BulkRunJob::dispatch(new \App\Models\Run);
                     })
                     ->color('success'),
                 \Filament\Tables\Actions\Action::make('benchmark')
-                ->label('Run benchmark')
-                ->action(function (): void {
-                    \App\Actions\RunBenchmarkAction::handle();
-                })
-                ->color('success'),
+                    ->label('Run benchmark')
+                    ->action(function (): void {
+                        \App\Actions\RunBenchmarkAction::handle();
+                    })
+                    ->color('success'),
             ])
             ->bulkActions([
                 BulkActionGroup::make([

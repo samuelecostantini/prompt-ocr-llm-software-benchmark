@@ -11,13 +11,11 @@ use SebastianBergmann\Timer\Exception;
 use setasign\Fpdi\Fpdi;
 use setasign\Fpdi\PdfParser\CrossReference\CrossReferenceException;
 
-
 class AwsTextractService implements OCRService
 {
     public function textExtractor(string $filePath): string|AwsLowConfidenceError|null
     {
         Log::channel('extraction')->info('start aws textract service, setting up the TextractClient...');
-
 
         $textractClient = new TextractClient([
             'version' => 'latest',
@@ -51,14 +49,13 @@ class AwsTextractService implements OCRService
         $rawLines = [];
         $formFields = [];
 
-        Log::channel('extraction')->info('open file at path: '. $filePath);
-
+        Log::channel('extraction')->info('open file at path: '.$filePath);
 
         try {
             $fp_image = fopen($filePath, 'rb');
             $image = fread($fp_image, filesize($filePath));
             fclose($fp_image);
-        } catch (Exception $e){
+        } catch (Exception $e) {
             Log::channel('extraction')->error('fopen error: '.$e->getMessage());
         }
 
@@ -71,8 +68,9 @@ class AwsTextractService implements OCRService
                     'FeatureTypes' => ['TABLES', 'FORMS'],
                 ]
             );
-        } catch (Exception $e){
+        } catch (Exception $e) {
             Log::channel('extraction')->error('analyzeDocument error: '.$e->getMessage());
+
             return null;
         }
         Log::channel('extraction')->info('analyzeDocument success');
@@ -88,10 +86,11 @@ class AwsTextractService implements OCRService
 
         $avg = $sum / $count;
 
-        Log::channel('extraction')->info("confidence level avg: ".$avg);
-        //dump('confidence level avg: '.$avg);
+        Log::channel('extraction')->info('confidence level avg: '.$avg);
+        // dump('confidence level avg: '.$avg);
         if ($avg < 80) {
-            Log::channel('extraction')->error("low confidence");
+            Log::channel('extraction')->error('low confidence');
+
             return new AwsLowConfidenceError($avg, $filePath);
         }
 
@@ -101,7 +100,6 @@ class AwsTextractService implements OCRService
         Log::channel('extraction')->info('$formFields: '.json_encode($formFields));
         $rawLines = array_merge($rawLines, $this->extractRawLines($blocks));
         Log::channel('extraction')->info('$rawLines'.json_encode($rawLines));
-
 
         return json_encode([
             'cellMap' => $cellMap,

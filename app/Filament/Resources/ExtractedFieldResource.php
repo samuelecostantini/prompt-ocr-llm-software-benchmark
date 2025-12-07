@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ExtractedFieldResource\Pages;
-use App\Filament\Resources\ExtractedFieldResource\RelationManagers;
 use App\Models\Document;
 use App\Models\DocumentDetail;
 use App\Models\ExtractedField;
@@ -14,9 +13,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Ufee\Sqlite3\Query\Select;
 
 class ExtractedFieldResource extends Resource
 {
@@ -38,11 +34,11 @@ class ExtractedFieldResource extends Resource
 
                 Placeholder::make('created_at')
                     ->label('Created Date')
-                    ->content(fn(?Document $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?Document $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
                     ->label('Last Modified Date')
-                    ->content(fn(?Document $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?Document $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }
 

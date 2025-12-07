@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Enums\DetailType;
 use App\Models\Document;
-use App\Models\User;
 use Prism\Prism\Schema\BooleanSchema;
 use Prism\Prism\Schema\NumberSchema;
 use Prism\Prism\Schema\ObjectSchema;
@@ -17,7 +16,6 @@ class DetailSchemaService
 
         $schema = [];
 
-
         $documentDetails = $document->detailSet->documentDetails;
 
         foreach ($documentDetails as $ocrDocumentDetail) {
@@ -27,6 +25,10 @@ class DetailSchemaService
                     description: $ocrDocumentDetail->additional_info_for_prompt ?? ''
                 ),
                 DetailType::Number->getValue() => new NumberSchema(
+                    name: $ocrDocumentDetail->name,
+                    description: $ocrDocumentDetail->additional_info_for_prompt ?? ''
+                ),
+                DetailType::Date->getValue() => new StringSchema(
                     name: $ocrDocumentDetail->name,
                     description: $ocrDocumentDetail->additional_info_for_prompt ?? ''
                 )

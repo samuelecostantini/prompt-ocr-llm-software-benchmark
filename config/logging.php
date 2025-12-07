@@ -130,7 +130,7 @@ return [
         'extraction' => [
             'driver' => 'single',
             'path' => storage_path('logs/extraction.log'),
-        ]
+        ],
 
     ],
 

@@ -27,7 +27,9 @@ class DetailSetResource extends Resource
     protected static ?string $model = DetailSet::class;
 
     protected static ?string $slug = 'detail-sets';
+
     protected static ?int $navigationSort = 2;
+
     protected static ?string $navigationIcon = 'heroicon-o-inbox-stack';
 
     public static function form(Form $form): Form
@@ -65,18 +67,18 @@ class DetailSetResource extends Resource
                         Textarea::make('additional_info_for_prompt')
                             ->columnSpanFull(),
 
-                        Checkbox::make('nullable')
+                        Checkbox::make('nullable'),
                     ])
                     ->columns(2)
                     ->columnSpanFull()
-                ->relationship('documentDetails'),
+                    ->relationship('documentDetails'),
                 Placeholder::make('created_at')
                     ->label('Created Date')
-                    ->content(fn(?DetailSet $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?DetailSet $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
                     ->label('Last Modified Date')
-                    ->content(fn(?DetailSet $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?DetailSet $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }
 

@@ -26,6 +26,8 @@ class GroundTruthResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static bool $shouldRegisterNavigation = false;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -45,11 +47,11 @@ class GroundTruthResource extends Resource
 
                 Placeholder::make('created_at')
                     ->label('Created Date')
-                    ->content(fn(?GroundTruth $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?GroundTruth $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
                     ->label('Last Modified Date')
-                    ->content(fn(?GroundTruth $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?GroundTruth $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }
 

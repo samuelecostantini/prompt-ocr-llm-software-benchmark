@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\BenchmarkResultResource\Pages;
 
 use App\Filament\Resources\BenchmarkResultResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateBenchmarkResult extends CreateRecord

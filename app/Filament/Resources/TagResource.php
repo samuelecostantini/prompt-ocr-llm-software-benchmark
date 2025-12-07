@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\TagResource\Pages;
 use App\Models\Tag;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
@@ -25,7 +24,9 @@ class TagResource extends Resource
     protected static ?string $model = Tag::class;
 
     protected static ?string $slug = 'tags';
+
     protected static ?int $navigationSort = 4;
+
     protected static ?string $navigationIcon = 'heroicon-o-tag';
 
     public static function form(Form $form): Form
@@ -51,11 +52,11 @@ class TagResource extends Resource
 
                 Placeholder::make('created_at')
                     ->label('Created Date')
-                    ->content(fn(?Tag $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?Tag $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
                     ->label('Last Modified Date')
-                    ->content(fn(?Tag $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?Tag $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }
 

@@ -7,13 +7,11 @@ use App\Filament\Imports\DocumentDetailImporter;
 use App\Filament\Resources\DocumentDetailResource\Pages;
 use App\Models\DetailSet;
 use App\Models\DocumentDetail;
-use Filament\Actions\ImportAction;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
@@ -40,6 +38,7 @@ class DocumentDetailResource extends Resource
     public static function form(Form $form): Form
     {
         $record = $form->model();
+
         return $form
             ->schema([
                 TextInput::make('name')
@@ -71,12 +70,12 @@ class DocumentDetailResource extends Resource
                 Placeholder::make('created_at')
                     ->label('Created Date')
                     ->hidden()
-                    ->content(fn(?DocumentDetail $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?DocumentDetail $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
                     ->label('Last Modified Date')
                     ->hidden()
-                    ->content(fn(?DocumentDetail $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?DocumentDetail $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }
 
@@ -109,7 +108,7 @@ class DocumentDetailResource extends Resource
             ])
             ->headerActions([
                 \Filament\Tables\Actions\ImportAction::make()
-                    ->importer(DocumentDetailImporter::class)
+                    ->importer(DocumentDetailImporter::class),
             ])
             ->bulkActions([
                 BulkActionGroup::make([

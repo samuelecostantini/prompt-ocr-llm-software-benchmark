@@ -2,21 +2,16 @@
 
 namespace App\Filament\Resources;
 
-use App\Actions\RunExtractionAction;
-use App\Filament\Pages\BenchmarkConfiguration;
 use App\Filament\Resources\DocumentResource\Pages;
 use App\Filament\Resources\DocumentResource\RelationManagers\DocumentDetailsRelationManager;
 use App\Models\DetailSet;
 use App\Models\Document;
-use App\Models\Prompt;
 use App\Models\Tag;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
@@ -28,7 +23,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use PhpParser\Comment\Doc;
 
 class DocumentResource extends Resource
 {
@@ -37,6 +31,7 @@ class DocumentResource extends Resource
     protected static ?string $slug = 'documents';
 
     protected static ?int $navigationSort = 0;
+
     protected static ?string $navigationIcon = 'heroicon-o-document';
 
     public static function form(Form $form): Form
@@ -65,11 +60,11 @@ class DocumentResource extends Resource
 
                 Placeholder::make('created_at')
                     ->label('Created Date')
-                    ->content(fn(?Document $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?Document $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
                     ->label('Last Modified Date')
-                    ->content(fn(?Document $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?Document $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }
 
@@ -98,9 +93,9 @@ class DocumentResource extends Resource
                 Action::make('Rerun extraction')
                     ->label('Rerun extraction')
                     ->modal(true)
-                    ->modalContent()
+                    ->modalContent(),
             ])
-            //->recordAction(fn (Document $record) => redirect(route('benchmark', ['document' => $record])))
+            // ->recordAction(fn (Document $record) => redirect(route('benchmark', ['document' => $record])))
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
@@ -111,9 +106,10 @@ class DocumentResource extends Resource
     public static function getRelations(): array
     {
         return [
-            DocumentDetailsRelationManager::make()
+            DocumentDetailsRelationManager::make(),
         ];
     }
+
     public static function getPages(): array
     {
         return [

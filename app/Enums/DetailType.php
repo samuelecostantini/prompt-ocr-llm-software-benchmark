@@ -8,6 +8,7 @@ enum DetailType: string implements HasLabel
 {
     case String = 'string';
     case Number = 'number';
+    case Date = 'date';
 
     public function getLabel(): ?string
     {
