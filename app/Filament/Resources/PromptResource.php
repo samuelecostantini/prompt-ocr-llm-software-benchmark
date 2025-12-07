@@ -84,6 +84,10 @@ class PromptResource extends Resource
                 EditAction::make(),
                 DeleteAction::make(),
             ])
+            ->headerActions([
+                    /** devo fare un bulk run per testare i prompt */
+
+            ])
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

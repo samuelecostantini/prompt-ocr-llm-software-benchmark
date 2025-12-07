@@ -13,13 +13,12 @@ use Illuminate\Support\Facades\Log;
 
 class RunExtractionAction
 {
-    public function handle(Run $run): void
+    public function handle(Document $document): void
     {
-        $document = $run->document;
         Log::channel('extraction')->info('starting extraction of document id: '.$document->id);
         Log::channel('extraction')->info('document at path: '.$document->getFirstMediaPath('document'));
         $extracted_text = app(AwsTextractService::class)->textExtractor($document->getFirstMediaPath('document'));
-        $structured_result = app(OpenAIService::class)->readInvoice($extracted_text, $run);
+        $structured_result = app(OpenAIService::class)->readInvoice($extracted_text, $document);
         Log::channel('extraction')->info('$structured_result: '.json_encode($structured_result, JSON_PRETTY_PRINT));
         foreach ($structured_result as $key => $result) {
 
