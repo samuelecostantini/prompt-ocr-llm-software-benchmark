@@ -86,7 +86,19 @@ class PromptResource extends Resource
             ])
             ->headerActions([
                     /** devo fare un bulk run per testare i prompt */
-
+                \Filament\Tables\Actions\Action::make(name: 'bulk_run')
+                    ->label('Run Bulk Extraction')
+                    ->action(function (): void {
+                        // Dispatch the BulkRunJob
+                        \App\Jobs\BulkRunJob::dispatch(new \App\Models\Run());
+                    })
+                    ->color('success'),
+                \Filament\Tables\Actions\Action::make('benchmark')
+                ->label('Run benchmark')
+                ->action(function (): void {
+                    \App\Actions\RunBenchmarkAction::handle();
+                })
+                ->color('success'),
             ])
             ->bulkActions([
                 BulkActionGroup::make([

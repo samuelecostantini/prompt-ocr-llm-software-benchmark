@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('documents', function (Blueprint $table) {
-            $table->unsignedBigInteger('detail_set_id')->nullable()->after('prompt_id')->change();
+        Schema::table('extracted_fields', function (Blueprint $table) {
+            $table->unsignedBigInteger('run_id')->after('document_detail_id');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('documents', function (Blueprint $table) {
+        Schema::table('extracted_fields', function (Blueprint $table) {
             //
         });
     }

@@ -5,7 +5,6 @@ namespace App\Jobs;
 use App\Actions\RunExtractionAction;
 use App\Models\Document;
 use App\Models\Prompt;
-use App\Models\Run;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -16,7 +15,7 @@ class BulkRunJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function __construct(private readonly Run $run)
+    public function __construct()
     {
     }
 
@@ -24,7 +23,7 @@ class BulkRunJob implements ShouldQueue
     {
         foreach (Prompt::all() as $prompt) {
             foreach (Document::all() as $document) {
-                RunExtractionAction::
+                (new RunExtractionAction)->handle($document, $prompt);
             }
         }
     }
