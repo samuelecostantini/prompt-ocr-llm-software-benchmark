@@ -16,4 +16,9 @@ class BenchmarkResult extends Model
     {
         return $this->hasOne(Prompt::class);
     }
+
+    public function extractedField(): HasOne
+    {
+        return $this->hasOne(ExtractedField::class, 'id', 'extracted_field_id');
+    }
 }

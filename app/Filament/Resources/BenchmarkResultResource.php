@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\BenchmarkResultResource\Pages;
 use App\Models\BenchmarkResult;
+use App\Models\DocumentDetail;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -28,6 +29,7 @@ class BenchmarkResultResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('run_id')->label('run ID'),
+                Tables\Columns\TextColumn::make('name')->label('Detail name'),
                 Tables\Columns\TextColumn::make('extracted_value')->label('valore estratto'),
                 Tables\Columns\TextColumn::make('expected_value')->label('valore atteso'),
                 Tables\Columns\TextColumn::make('score')->label('score'),

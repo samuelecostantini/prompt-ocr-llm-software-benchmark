@@ -17,7 +17,7 @@ class RunBenchmarkAction
 
                     $groundThrut = $document->groundTruths()->where('document_detail_id', $extractedField->document_detail_id)->first();
 
-                    $score = Evaluation::computeScore($extractedField->value, $groundThrut ? $groundThrut->value : '', $extractedField->document_detail->type);
+                    $score = Evaluation::computeScore($extractedField->value, $groundThrut ? $groundThrut->value : '', $extractedField?->document_detail?->type? : '');
 
                     $groundThrut = $document->groundTruths()->where('document_detail_id', $extractedField->document_detail_id)->first();
                     BenchmarkResult::create([
