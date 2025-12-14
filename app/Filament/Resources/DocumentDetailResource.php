@@ -31,7 +31,7 @@ class DocumentDetailResource extends Resource
 
     protected static ?string $slug = 'document-details';
 
-    protected static bool $shouldRegisterNavigation = true;
+    protected static bool $shouldRegisterNavigation = false;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-magnifying-glass';
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ExtractedField extends Model
 {
@@ -14,7 +15,7 @@ class ExtractedField extends Model
         return $this->belongsTo(Document::class);
     }
 
-    public function document_detail(): BelongsTo
+    public function documentDetail(): BelongsTo
     {
         return $this->belongsTo(DocumentDetail::class);
     }
@@ -22,5 +23,10 @@ class ExtractedField extends Model
     public function run(): BelongsTo
     {
         return $this->belongsTo(Run::class);
+    }
+
+    public function benchmarkResult(): HasOne
+    {
+        return $this->hasOne(BenchmarkResult::class);
     }
 }

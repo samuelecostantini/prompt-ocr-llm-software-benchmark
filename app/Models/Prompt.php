@@ -22,4 +22,53 @@ class Prompt extends Model
     {
         return $this->hasMany(Run::class);
     }
+
+    public function getAccuracy()
+    {
+        $totalAccuracy = 0;
+        $totalResults = 0;
+        foreach ($this->runs as $run) {
+            $benchmarkResults = BenchmarkResult::where('run_id', $run->id);
+            $totalResults += $benchmarkResults->count();
+            foreach ($benchmarkResults->get() as $result) {
+                $totalAccuracy += $result->score;
+            }
+        }
+
+        return $totalResults != 0 ? $totalAccuracy / $totalResults : 0;
+    }
+
+    public function getAccuracyByTag(): array
+    {
+        $tagStats = [];
+
+        foreach ($this->runs as $run) {
+            $document = $run->document;
+
+            foreach ($document->tags as $tag) {
+                if (! isset($tagStats[$tag->title])) {
+                    $tagStats[$tag->title] = [
+                        'totalAccuracy' => 0,
+                        'totalResults' => 0,
+                    ];
+                }
+
+                $benchmarkResults = BenchmarkResult::where('run_id', $run->id);
+                $tagStats[$tag->title]['totalResults'] += $benchmarkResults->count();
+
+                foreach ($benchmarkResults->get() as $result) {
+                    $tagStats[$tag->title]['totalAccuracy'] += $result->score;
+                }
+            }
+        }
+
+        $accuracy = [];
+        foreach ($tagStats as $tagName => $stats) {
+            $accuracy[$tagName] = $stats['totalResults'] != 0
+                ? $stats['totalAccuracy'] / $stats['totalResults']
+                : 0;
+        }
+
+        return $accuracy;
+    }
 }

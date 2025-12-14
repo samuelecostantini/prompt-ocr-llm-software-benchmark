@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class BenchmarkResult extends Model
@@ -17,8 +18,8 @@ class BenchmarkResult extends Model
         return $this->hasOne(Prompt::class);
     }
 
-    public function extractedField(): HasOne
+    public function extractedField(): BelongsTo
     {
-        return $this->hasOne(ExtractedField::class, 'id', 'extracted_field_id');
+        return $this->belongsTo(ExtractedField::class);
     }
 }

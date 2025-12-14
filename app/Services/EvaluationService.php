@@ -28,16 +28,17 @@ class EvaluationService
         $floatExp = (float) str_replace(',', '.', $cleanedExpected);
 
         if (abs($floatEx - $floatExp) < 0.01) {
-            return 1.0; 
+            return 1.0;
         }
-        return 0.0; 
+
+        return 0.0;
     }
 
     protected function compareDates(string $extractedValue, string $expectedValue)
     {
         $extractedValue = str_replace(['-', '.'], '/', $extractedValue);
         $expectedValue = str_replace(['-', '.'], '/', $expectedValue);
-        
+
         try {
             $dateEx = Carbon::createFromFormat('d/m/Y', $extractedValue);
             $dateExp = Carbon::createFromFormat('d/m/Y', $expectedValue);
@@ -46,15 +47,15 @@ class EvaluationService
                 $dateEx = Carbon::createFromFormat('Y/m/d', $extractedValue);
                 $dateExp = Carbon::createFromFormat('Y/m/d', $expectedValue);
             } catch (\Exception $e) {
-               try {
+                try {
                     $dateEx = Carbon::createFromFormat('m/d/Y', $extractedValue);
                     $dateExp = Carbon::createFromFormat('m/d/Y', $expectedValue);
-            } catch (\Exception $e) {
+                } catch (\Exception $e) {
                     return 0.0;
-               }
+                }
             }
         }
-        
+
         return $dateEx->eq($dateExp) ? 1.0 : 0.0;
     }
 
@@ -62,5 +63,4 @@ class EvaluationService
     {
         return similar_text(strtolower($extractedValue), strtolower($expectedValue), $percent) ? $percent / 100 : 0.0;
     }
-
 }
