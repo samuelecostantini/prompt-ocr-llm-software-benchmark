@@ -21,7 +21,9 @@ class BulkRunJob implements ShouldQueue
     {
         foreach (Prompt::all() as $prompt) {
             foreach (Document::all() as $document) {
-                (new RunExtractionAction)->handle($document, $prompt);
+                if(!$document->runs()->where('prompt_id', $prompt->id)->exists()) {
+                    (new RunExtractionAction)->handle($document, $prompt);
+                }
             }
         }
     }

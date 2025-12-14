@@ -26,7 +26,6 @@ class GroundTruthsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->query(GroundTruth::query())
             ->columns([
                 Tables\Columns\TextColumn::make('documentDetail.name'),
                 Tables\Columns\TextColumn::make('value')

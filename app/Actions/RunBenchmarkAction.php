@@ -17,12 +17,16 @@ class RunBenchmarkAction
 
                     $groundThrut = $document->groundTruths()->where('document_detail_id', $extractedField->document_detail_id)->first();
 
-                    $score = Evaluation::computeScore($extractedField->value, $groundThrut ? $groundThrut->value : '', $extractedField?->document_detail?->type ?: '');
+                    $score = Evaluation::computeScore($extractedField->value, $groundThrut ? $groundThrut->value : '', $extractedField?->documentDetail?->type ?: '');
 
                     $groundThrut = $document->groundTruths()->where('document_detail_id', $extractedField->document_detail_id)->first();
                     BenchmarkResult::create([
                         'run_id' => $run->id,
-                        'extracted_field_id' => $extractedField->document_detail_id,
+                        'prompt_id' => $run->prompt_id,
+                        'document_id' => $document->id,
+                        'extracted_field_id' => $extractedField->id,
+                        'detail_name' => $extractedField?->document_detail?->name ?: '',
+                        'detail_id' => $extractedField->id,
                         'extracted_value' => $extractedField->value,
                         'expected_value' => $groundThrut ? $groundThrut->value : '',
                         'score' => $score,

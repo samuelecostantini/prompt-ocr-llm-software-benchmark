@@ -34,10 +34,6 @@ class DetailSchemaService
                 )
             };
         }
-        /*$schema[] = new BooleanSchema(
-            name: 'valid',
-            description: 'Is the text of a document. If there is text from multiple documents, it is to be considered invalid.'
-        );*/
 
         return new ObjectSchema(
             name: 'document',

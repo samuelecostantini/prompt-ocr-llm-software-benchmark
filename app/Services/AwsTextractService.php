@@ -26,24 +26,6 @@ class AwsTextractService implements OCRService
             ],
         ]);
 
-        /*
-        $endDir = storage_path('split'.rand().'/');
-        Log::channel('extraction')->info('final file path after conversion: '.$endDir);
-        if (strtolower(pathinfo($filePath, PATHINFO_EXTENSION)) === 'pdf') {
-            Log::channel('extraction')->info('document id a pdf');
-            try {
-                $files = $this->splitPdf($filePath, $endDir);
-            } catch (CrossReferenceException $e) {
-                $name = Str::replace('/', '-', $filePath);
-                $output_dir = 'storage/app/public/converted-'.$name;
-                dump($output_dir);
-                shell_exec('gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dNOPAUSE -dQUIET -dBATCH -sOutputFile='.$output_dir.' '.$filePath);
-                $files = $this->splitPdf($output_dir, $endDir);
-            }
-        } else {
-            $files = [$filePath];
-        }
-        */
 
         $cellMap = [];
         $rawLines = [];

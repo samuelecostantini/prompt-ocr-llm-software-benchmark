@@ -27,14 +27,11 @@ class Prompt extends Model
     {
         $totalAccuracy = 0;
         $totalResults = 0;
-        foreach ($this->runs as $run) {
-            $benchmarkResults = BenchmarkResult::where('run_id', $run->id);
-            $totalResults += $benchmarkResults->count();
+        $benchmarkResults = BenchmarkResult::where('prompt_id', $this->id);
+        $totalResults = $benchmarkResults->count();
             foreach ($benchmarkResults->get() as $result) {
                 $totalAccuracy += $result->score;
             }
-        }
-
         return $totalResults != 0 ? $totalAccuracy / $totalResults : 0;
     }
 
@@ -45,9 +42,9 @@ class Prompt extends Model
         foreach ($this->runs as $run) {
             $document = $run->document;
 
-            foreach ($document->tags as $tag) {
+            foreach ($document?->tags? : [] as $tag) {
                 if (! isset($tagStats[$tag->title])) {
-                    $tagStats[$tag->title] = [
+                    $tagStats[$tag?->title? : 'null'] = [
                         'totalAccuracy' => 0,
                         'totalResults' => 0,
                     ];

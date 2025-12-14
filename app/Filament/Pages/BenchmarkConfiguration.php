@@ -20,7 +20,6 @@ class BenchmarkConfiguration extends Page
 
     protected static bool $shouldRegisterNavigation = false;
 
-    #[NoReturn]
     public function mount(): void
     {
         $this->document = Document::findOrFail(request('document_id'));
