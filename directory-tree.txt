@@ -1,0 +1,122 @@
+app/
+├── Actions/
+│   ├── RunBenchmarkAction.php
+│   └── RunExtractionAction.php
+├── Console/
+│   ├── Commands/
+│       └── AwsTextractTest.php
+├── Enums/
+│   ├── AwsSignals.php
+│   ├── DetailFormat.php
+│   └── DetailType.php
+├── Facades/
+│   ├── DetailSchema.php
+│   └── Evaluation.php
+├── Filament/
+│   ├── Imports/
+│   │   └── DocumentDetailImporter.php
+│   ├── Pages/
+│   │   ├── BenchmarkConfiguration.php
+│   │   └── BenchmarkStats.php
+│   ├── Resources/
+│       ├── BenchmarkResultResource/
+│       │   ├── Pages/
+│       │       ├── CreateBenchmarkResult.php
+│       │       ├── EditBenchmarkResult.php
+│       │       └── ListBenchmarkResults.php
+│       ├── DetailSetResource/
+│       │   ├── Pages/
+│       │       ├── CreateDetailSet.php
+│       │       ├── EditDetailSet.php
+│       │       └── ListDetailSets.php
+│       ├── DocumentDetailResource/
+│       │   ├── Pages/
+│       │       ├── CreateDocumentDetail.php
+│       │       ├── EditDocumentDetail.php
+│       │       └── ListDocumentDetails.php
+│       ├── DocumentResource/
+│       │   ├── Pages/
+│       │   │   ├── CreateDocument.php
+│       │   │   ├── EditDocument.php
+│       │   │   └── ListDocuments.php
+│       │   ├── RelationManagers/
+│       │       ├── DocumentDetailsRelationManager.php
+│       │       ├── GroundTruthsRelationManager.php
+│       │       └── RunsRelationManager.php
+│       ├── ExtractedFieldResource/
+│       │   ├── Pages/
+│       │       ├── CreateExtractedField.php
+│       │       ├── EditExtractedField.php
+│       │       └── ListExtractedFields.php
+│       ├── ExtractionResultResource/
+│       │   ├── Pages/
+│       │       ├── CreateExtractionResult.php
+│       │       ├── EditExtractionResult.php
+│       │       └── ListExtractionResults.php
+│       ├── GroundTruthResource/
+│       │   ├── Pages/
+│       │       ├── CreateGroundTruth.php
+│       │       ├── EditGroundTruth.php
+│       │       └── ListGroundTruths.php
+│       ├── PromptResource/
+│       │   ├── Pages/
+│       │       ├── CreatePrompt.php
+│       │       ├── EditPrompt.php
+│       │       └── ListPrompts.php
+│       ├── RunResource/
+│       │   ├── Pages/
+│       │       ├── CreateRun.php
+│       │       ├── EditRun.php
+│       │       └── ListRuns.php
+│       ├── TagResource/
+│       │   ├── Pages/
+│       │       ├── CreateTag.php
+│       │       ├── EditTag.php
+│       │       └── ListTags.php
+│       ├── BenchmarkResultResource.php
+│       ├── DetailSetResource.php
+│       ├── DocumentDetailResource.php
+│       ├── DocumentResource.php
+│       ├── ExtractedFieldResource.php
+│       ├── ExtractionResultResource.php
+│       ├── GroundTruthResource.php
+│       ├── PromptResource.php
+│       ├── RunResource.php
+│       └── TagResource.php
+├── Http/
+│   ├── Controllers/
+│       ├── Auth/
+│       │   └── VerifyEmailController.php
+│       └── Controller.php
+├── Interfaces/
+│   ├── AIService.php
+│   └── OCRService.php
+├── Jobs/
+│   └── BulkRunJob.php
+├── Livewire/
+│   ├── Actions/
+│       └── Logout.php
+├── Models/
+│   ├── BenchmarkResult.php
+│   ├── DetailSet.php
+│   ├── Document.php
+│   ├── DocumentDetail.php
+│   ├── ExtractedField.php
+│   ├── ExtractionResult.php
+│   ├── GroundTruth.php
+│   ├── Prompt.php
+│   ├── Run.php
+│   ├── Tag.php
+│   └── User.php
+├── Providers/
+│   ├── Filament/
+│   │   └── AdminPanelProvider.php
+│   ├── AppServiceProvider.php
+│   ├── NativeAppServiceProvider.php
+│   └── VoltServiceProvider.php
+├── Services/
+│   ├── AwsTextractService.php
+│   ├── DetailSchemaService.php
+│   ├── EvaluationService.php
+│   └── OpenAIService.php
+└── AwsLowConfidenceError.php

@@ -5,34 +5,41 @@ namespace App\Actions;
 use App\Facades\Evaluation;
 use App\Models\BenchmarkResult;
 use App\Models\Document;
+use App\Models\ExtractedField;
+use App\Models\GroundTruth;
 use App\Models\Run;
 
 class RunBenchmarkAction
 {
-    public static function handle()
+    public static function handle(): void
     {
-        foreach (Document::all() as $document) {
-            foreach (Run::all() as $run) {
-                foreach ($run->extractedFields as $extractedField) {
-
-                    $groundThrut = $document->groundTruths()->where('document_detail_id', $extractedField->document_detail_id)->first();
-
-                    $score = Evaluation::computeScore($extractedField->value, $groundThrut ? $groundThrut->value : '', $extractedField?->documentDetail?->type ?: '');
-
-                    $groundThrut = $document->groundTruths()->where('document_detail_id', $extractedField->document_detail_id)->first();
-                    BenchmarkResult::create([
-                        'run_id' => $run->id,
-                        'prompt_id' => $run->prompt_id,
-                        'document_id' => $document->id,
-                        'extracted_field_id' => $extractedField->id,
-                        'detail_name' => $extractedField?->document_detail?->name ?: '',
-                        'detail_id' => $extractedField->id,
-                        'extracted_value' => $extractedField->value,
-                        'expected_value' => $groundThrut ? $groundThrut->value : '',
-                        'score' => $score,
-                    ]);
-                }
+        foreach (ExtractedField::all() as $extractedField){
+            /** @var ExtractedField $extractedField */
+            $expectedValue = GroundTruth::where('document_id', $extractedField->document_id)
+                ->where('document_detail_id', $extractedField->document_detail_id)->first()?->value? : '';
+            $expectedValue = $extractedField->document->groundTruths->where('document_detail_id', $extractedField->document_detail_id)->first();
+            if($expectedValue === null){
+                dd($extractedField, $extractedField->document, $extractedField->document->groundTruths);
             }
+            $extractedValue = $extractedField->value;
+
+            $score = Evaluation::computeScore(
+                $expectedValue,
+                $extractedValue,
+                $extractedField->documentDetail?->type ?? ''
+            );
+
+            BenchmarkResult::create([
+                'run_id' => $extractedField->run_id,
+                'prompt_id' => $extractedField->run?->prompt_id? : 0,
+                'document_id' => $extractedField->document_id,
+                'extracted_field_id' => $extractedField->id,
+                'detail_name' => $extractedField->documentDetail->name ?? '',
+                'detail_id' => $extractedField->document_detail_id,
+                'extracted_value' => $extractedValue,
+                'expected_value' => $expectedValue,
+                'score' => $score,
+            ]);
         }
     }
 
