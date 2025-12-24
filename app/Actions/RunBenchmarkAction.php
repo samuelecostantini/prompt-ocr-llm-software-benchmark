@@ -15,12 +15,9 @@ class RunBenchmarkAction
     {
         foreach (ExtractedField::all() as $extractedField){
             /** @var ExtractedField $extractedField */
-            $expectedValue = GroundTruth::where('document_id', $extractedField->document_id)
-                ->where('document_detail_id', $extractedField->document_detail_id)->first()?->value? : '';
-            $expectedValue = $extractedField->document->groundTruths->where('document_detail_id', $extractedField->document_detail_id)->first();
-            if($expectedValue === null){
-                dd($extractedField, $extractedField->document, $extractedField->document->groundTruths);
-            }
+        
+            $expectedValue = $extractedField->document->groundTruths->where('document_detail_id', $extractedField->document_detail_id)->first()?->value? : '';
+          
             $extractedValue = $extractedField->value;
 
             $score = Evaluation::computeScore(
