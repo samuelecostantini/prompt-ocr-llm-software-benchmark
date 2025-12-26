@@ -37,8 +37,10 @@ class OpenAIService
             ->withSchema($invoiceSchema)
             ->withPrompt(
                 $prompt->text
-                .'Extracted text: """'
-                .$invoiceText.'"""'
+                ."\n\nJson schema: \n\n"
+                . $invoiceSchema
+                ."\n\nExtracted text: \n\n"
+                .$invoiceText."\n"
             )
             ->asStructured();
         Log::channel('extraction')->info('response: '.json_encode($response->structured, JSON_PRETTY_PRINT));
