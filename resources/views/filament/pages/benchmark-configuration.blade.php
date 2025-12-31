@@ -1,3 +1,4 @@
+@vite(['resources/css/app.css', 'resources/js/app.jss'])
 <x-filament-panels::page>
     <x-filament::card>
         <div>
@@ -15,8 +16,8 @@
             </a>
         </div>
         @if($document->getFirstMedia('document')->mime_type !== 'application/pdf')
-            <div>
-                <img src="{{ $document->getFirstMedia('document')->getPath() }}" alt="document"/>
+            <div class="max-w-3xl overflow-hidden shadow-2xl rounded-md mt-2">
+                <img src="{{ $document->getFirstMedia('document')->getUrl() }}" alt="document"/>
             </div>
         @endif
     </x-filament::card>
@@ -27,7 +28,7 @@
             'pageClass'   => static::class,
         ])
     </x-filament::section>
-    <x-filament::section heading="Runs configuration" :collapsible='true'>
+    <x-filament::section heading="Runs configuration" :collapsed='true' :collapsible='true'>
         @livewire(\App\Filament\Resources\DocumentResource\RelationManagers\RunsRelationManager::class, [
             'ownerRecord' => $this->document,
             'pageClass'   => static::class,
