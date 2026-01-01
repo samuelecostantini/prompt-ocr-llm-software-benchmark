@@ -3,7 +3,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <div>
         <div
-            class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 gap-6 w-full
+            class="grid grid-cols-5 gap-6 w-full
                    rounded-xl
                    bg-gray-50 dark:bg-gray-900 p-4"
         >
@@ -37,9 +37,9 @@
                         <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                             <div
                                 class="h-full rounded-full transition-all
-                                    @if ($prompt->getAccuracy() >= 0.5)
+                                    @if ($prompt->getAccuracy() >= 0.90)
                                         bg-green-500 dark:bg-green-400
-                                    @elseif ($prompt->getAccuracy() >= 0.35)
+                                    @elseif ($prompt->getAccuracy() >= 0.55)
                                         bg-yellow-500 dark:bg-yellow-400
                                     @else
                                         bg-red-500 dark:bg-red-400
@@ -58,9 +58,9 @@
                             <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                             <div
                                 class="h-full rounded-full transition-all
-                                    @if ( $avgAccuracy >= 0.50)
+                                    @if ( $avgAccuracy >= 0.90)
                                         bg-green-500 dark:bg-green-400
-                                    @elseif ( $avgAccuracy >= 0.35)
+                                    @elseif ( $avgAccuracy >= 0.55)
                                         bg-yellow-500 dark:bg-yellow-400
                                     @else
                                         bg-red-500 dark:bg-red-400
@@ -75,7 +75,7 @@
         </div>
     </div>
     <div>
-        <div>Dati grezzi statiche</div>
+        <div>Dati grezzi benchmark</div>
     </div>
     <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
     <table class="w-full border-collapse text-md">
@@ -84,6 +84,12 @@
                 class="bg-gray-100 text-gray-700
                        dark:bg-gray-800 dark:text-gray-200"
             >
+                <th class="px-4 py-3 text-left font-semibold">
+                    Prompt
+                </th>
+                <th class="px-4 py-3 text-left font-semibold">
+                    Document
+                </th>
                 <th class="px-4 py-3 text-left font-semibold">
                     Detail name
                 </th>
@@ -103,8 +109,14 @@
             class="divide-y-gray
                    bg-white dark:bg-gray-900"
         >
-            @foreach (\App\Models\BenchmarkResult::all() as $result)
-                <tr>
+            @foreach (\App\Models\BenchmarkResult::all()->sortByDesc('score') as $result)
+                <tr class="odd:bg-gray-500/25">
+                    <td class="px-4 py-3 text-gray-800 dark:text-white">
+                        {{ $result->prompt?->title }}
+                    </td>
+                    <td class="px-4 py-3 text-gray-800 dark:text-white">
+                        {{ $result->document?->title }}
+                    </td>
                     <td class="px-4 py-3 text-gray-800 dark:text-white">
                         {{ $result->extractedField?->documentDetail?->name }}
                     </td>
@@ -114,7 +126,7 @@
                     </td>
 
                     <td class="px-4 py-3 text-gray-700 dark:text-white">
-                        {{ $result->expected_value }}
+                        {{ $result->expected_value? : 'Unknown' }}
                     </td>
 
                     <td class="px-4 py-3 font-semibold">

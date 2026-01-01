@@ -18,7 +18,6 @@ class GroundTruthsRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\TextInput::make('value')
-                    ->required()
                     ->maxLength(255),
             ]);
     }

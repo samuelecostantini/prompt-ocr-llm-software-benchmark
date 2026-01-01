@@ -16,13 +16,13 @@ class RunBenchmarkAction
         foreach (ExtractedField::all() as $extractedField){
             /** @var ExtractedField $extractedField */
         
-            $expectedValue = $extractedField->document->groundTruths->where('document_detail_id', $extractedField->document_detail_id)->first()?->value? : '';
+            $expectedValue = $extractedField->document->groundTruths->where('document_detail_id', $extractedField->document_detail_id)->first()?->value? : null;
           
             $extractedValue = $extractedField->value;
 
             $score = Evaluation::computeScore(
-                $expectedValue,
                 $extractedValue,
+                $expectedValue,
                 $extractedField->documentDetail?->type ?? ''
             );
 

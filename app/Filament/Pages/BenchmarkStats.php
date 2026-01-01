@@ -6,6 +6,7 @@ use Filament\Pages\Page;
 
 class BenchmarkStats extends Page
 {
+    public string $filter = "created_at";
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static string $view = 'filament.pages.benchmark-stats';

@@ -24,13 +24,15 @@ class BulkRunJob implements ShouldQueue
 
     public function handle(): void
     {
-        
         foreach (Document::all() as $document) {
             
-            $extracted_text = app(AwsTextractService::class)->textExtractor($document->getFirstMediaPath('document'));
+            if($document->runs()->count() >= Prompt::count()) {
+                continue;
+            }
 
+            $extracted_text = app(AwsTextractService::class)->textExtractor($document->getFirstMediaPath('document'));
+            
             foreach (Prompt::all() as $prompt) {
-                
                 if(!$document->runs()->where('prompt_id', $prompt->id)->exists()) {
                     $run = Run::create([
                         'document_id' => $document->id,
@@ -45,18 +47,20 @@ class BulkRunJob implements ShouldQueue
                     Log::channel('extraction')->info('$structured_result: '.json_encode($structured_result, JSON_PRETTY_PRINT));
 
                     foreach ($structured_result as $key => $result) {
-                        $document_detail_id = DocumentDetail::whereName($key)->first()->id;
-                        $document->extractedFields()->create([
-                            'document_detail_id' => $document_detail_id,
-                            'run_id' => $run->id,
-                            'value' => $result,
-                        ]);
+                        if (DocumentDetail::whereName($key)->first() !== null) {
+                            $document_detail_id = DocumentDetail::whereName($key)->first()->id;
+                            $document->extractedFields()->create([
+                                'document_detail_id' => $document_detail_id,
+                                'run_id' => $run->id,
+                                'value' => $result,
+                            ]);
+                        }
                     }
 
                     Log::channel('extraction')->info('extraction ended.');
                     Log::channel('extraction')->info('___________________________________________________________________');
                     Log::channel('extraction')->info('___________________________________________________________________');
-
+                    
                 }
             }
         }

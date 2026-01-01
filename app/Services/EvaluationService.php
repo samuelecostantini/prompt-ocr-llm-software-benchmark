@@ -9,13 +9,25 @@ class EvaluationService
 {
     public function __construct() {}
 
-    public function computeScore(string $extractedValue, string $expectedValue, string $detailType): float
+    public function computeScore(string $extractedValue, ?string $expectedValue, string $detailType): float
     {
+        if($expectedValue === null){
+            if($extractedValue === null 
+                || $extractedValue === ''
+                || $extractedValue === '0' 
+                || $extractedValue === 0
+            ){ 
+                return 1.0; 
+            } else{
+                return 0.0; 
+            }
+        }
+                
         return match ($detailType) {
             DetailType::String->getValue() => $this->compareStringsWithJaccard($extractedValue, $expectedValue),
             DetailType::Number->getValue() => $this->compareNumbers($extractedValue, $expectedValue),
             DetailType::Date->getValue() => $this->compareDates($extractedValue, $expectedValue),
-            default => 0.0,
+            default => 0.0
         };
     }
 
@@ -51,7 +63,7 @@ class EvaluationService
                     $dateEx = Carbon::createFromFormat('m/d/Y', $extractedValue);
                     $dateExp = Carbon::createFromFormat('m/d/Y', $expectedValue);
                 } catch (\Exception $e) {
-                    return 0.0;
+                    return $this->compareStringsWithJaccard($extractedValue, $expectedValue);
                 }
             }
         }

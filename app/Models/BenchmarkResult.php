@@ -8,14 +8,19 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class BenchmarkResult extends Model
 {
-    public function document(): HasOne
+    public function document(): BelongsTo
     {
-        return $this->hasOne(Document::class);
+        return $this->belongsTo(Document::class);
     }
 
-    public function prompt(): HasOne
+    public function prompt(): BelongsTo
     {
-        return $this->hasOne(Prompt::class);
+        return $this->belongsTo(Prompt::class);
+    }
+
+    public function run(): BelongsTo
+    {
+        return $this->belongsTo(Run::class);
     }
 
     public function extractedField(): BelongsTo

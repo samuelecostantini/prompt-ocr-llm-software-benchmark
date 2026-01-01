@@ -70,11 +70,11 @@ class AwsTextractService implements OCRService
 
         Log::channel('extraction')->info('confidence level avg: '.$avg);
         // dump('confidence level avg: '.$avg);
-        if ($avg < 80) {
+        /*if ($avg < 80) {
             Log::channel('extraction')->error('low confidence');
 
             return new AwsLowConfidenceError($avg, $filePath);
-        }
+        }*/
 
         $cellMap = array_merge($cellMap, $this->extractTablesCells($blocks));
         Log::channel('extraction')->info('$cellMap: '.json_encode($cellMap));
@@ -261,8 +261,8 @@ class AwsTextractService implements OCRService
     private function getTextFromRelationships(mixed $keyBlock, array $blockMap)
     {
         $text = '';
-        if (! empty($block['Relationships'])) {
-            foreach ($block['Relationships'] as $rel) {
+        if (! empty($keyBlock['Relationships'])) {
+            foreach ($keyBlock['Relationships'] as $rel) {
                 if ($rel['Type'] === 'CHILD') {
                     foreach ($rel['Ids'] as $childId) {
                         if (isset($blockMap[$childId]) && isset($blockMap[$childId]['Text'])) {

@@ -38,7 +38,7 @@ class OpenAIService
             ->withPrompt(
                 $prompt->text
                 ."\n\nJson schema: \n\n"
-                . $invoiceSchema
+                . json_encode($invoiceSchema, JSON_PRETTY_PRINT)
                 ."\n\nExtracted text: \n\n"
                 .$invoiceText."\n"
             )
