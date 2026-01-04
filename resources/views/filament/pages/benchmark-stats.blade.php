@@ -24,17 +24,17 @@
                     {{-- Accuracy --}}
                     <div class="space-y-3">
                         <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">
+                            <span class="text-md text-gray-500 dark:text-gray-400">
                                 Accuracy
                             </span>
 
-                            <span class="text-sm font-semibold text-gray-900 dark:text-white">
+                            <span class="text-md font-bold text-gray-900 dark:text-white">
                                 {{ number_format($prompt->getAccuracy() * 100, 2) }}%
                             </span>
                         </div>
 
                         {{-- Progress bar --}}
-                        <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                        <div class="h-1 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                             <div
                                 class="h-full rounded-full transition-all
                                     @if ($prompt->getAccuracy() >= 0.90)
@@ -55,7 +55,7 @@
                                     <b>{{ $tag }}</b>:</span>
                                     <span> {{ number_format($avgAccuracy*100, 2) }}%</span>
                                 </div>
-                            <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                            <div class="h-1 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                             <div
                                 class="h-full rounded-full transition-all
                                     @if ( $avgAccuracy >= 0.90)
@@ -109,7 +109,7 @@
             class="divide-y-gray
                    bg-white dark:bg-gray-900"
         >
-            @foreach (\App\Models\BenchmarkResult::all()->sortByDesc('score') as $result)
+            @foreach (\App\Models\BenchmarkResult::all()->sortByDesc('document_id') as $result)
                 <tr class="odd:bg-gray-500/25">
                     <td class="px-4 py-3 text-gray-800 dark:text-white">
                         {{ $result->prompt?->title }}

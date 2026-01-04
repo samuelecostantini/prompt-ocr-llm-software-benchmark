@@ -2,11 +2,17 @@
 
 namespace App\Filament\Resources\DocumentResource\RelationManagers;
 
+use App\Models\ExtractedField;
+use App\Models\Prompt;
+use App\Models\Run;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Filters\Filter;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Enums\FiltersLayout;
 
 class DocumentDetailsRelationManager extends RelationManager
 {
@@ -26,14 +32,47 @@ class DocumentDetailsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('document_detail.name')
-                    ->label('Nome dettaglio'),
+                Tables\Columns\TextColumn::make('documentDetail.name')
+                    ->label('Detail Name'),
                 Tables\Columns\TextColumn::make('value')
-                    ->label('Valore'),
+                    ->label('Value'),
+                Tables\Columns\TextColumn::make('documentDetail.groundTruth.value')
+                    ->getStateUsing(fn (ExtractedField $record) => $record->document->groundTruths()->where('document_detail_id', $record->document_detail_id)->first()?->value? : 'N/A')
+                    ->label('Ground Truth'),    
+                Tables\Columns\TextColumn::make('run.prompt.title')
+                    ->label('Prompt'),
+ 
             ])
             ->filters([
-                //
-            ])
+                Filter::make('prompt')
+                    ->form([
+                        Forms\Components\Select::make('prompt_id')
+                            ->label('Prompt')
+                            ->options(Prompt::all()->pluck('title', 'id'))
+                            ->searchable(),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data['prompt_id'],
+                            fn (Builder $query, $promptId): Builder => $query->whereHas('run', fn (Builder $query) => $query->where('prompt_id', $promptId)),
+                        );
+                    }),
+                Filter::make('document_detail')
+                    ->form([
+                        Forms\Components\Select::make('document_detail_id')
+                            ->label('Document Detail')
+                            ->options(function (RelationManager $livewire) {
+                                return $livewire->ownerRecord->detailSet->documentDetails->pluck('name', 'id');
+                            })
+                            ->searchable(),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data['document_detail_id'],
+                            fn (Builder $query, $detailId): Builder => $query->where('document_detail_id', $detailId),
+                        );
+                    }),
+            ], layout: FiltersLayout::AboveContent)
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
             ])

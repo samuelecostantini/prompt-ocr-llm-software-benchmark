@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\DetailType;
 use Carbon\Carbon;
+use Throwable;
 
 class EvaluationService
 {
@@ -54,15 +55,15 @@ class EvaluationService
         try {
             $dateEx = Carbon::createFromFormat('d/m/Y', $extractedValue);
             $dateExp = Carbon::createFromFormat('d/m/Y', $expectedValue);
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             try {
                 $dateEx = Carbon::createFromFormat('Y/m/d', $extractedValue);
                 $dateExp = Carbon::createFromFormat('Y/m/d', $expectedValue);
-            } catch (\Exception $e) {
+            } catch (Throwable $e) {
                 try {
                     $dateEx = Carbon::createFromFormat('m/d/Y', $extractedValue);
                     $dateExp = Carbon::createFromFormat('m/d/Y', $expectedValue);
-                } catch (\Exception $e) {
+                } catch (Throwable $e) {
                     return $this->compareStringsWithJaccard($extractedValue, $expectedValue);
                 }
             }

@@ -40,17 +40,4 @@ class RunBenchmarkAction
         }
     }
 
-    public function calculateScore($extractedValue, $expectedValue)
-    {
-        $extractedValue = trim(strtolower($extractedValue));
-        $expectedValue = trim(strtolower($expectedValue));
-
-        if ($extractedValue === $expectedValue) {
-            return 1.0; // Perfect match
-        }
-
-        similar_text($extractedValue, $expectedValue, $percent);
-
-        return $percent / 100;
-    }
 }

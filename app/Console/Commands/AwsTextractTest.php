@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Models\ExtractedField;
 
 class AwsTextractTest extends Command
 {
@@ -11,7 +12,7 @@ class AwsTextractTest extends Command
      *
      * @var string
      */
-    protected $signature = 'test:textract';
+    protected $signature = 'clean:extracted-fields';
 
     /**
      * The console command description.
@@ -25,6 +26,6 @@ class AwsTextractTest extends Command
      */
     public function handle()
     {
-        dump('ai');
+       $deletedCount = ExtractedField::whereDoesntHave('run')->delete();
     }
 }

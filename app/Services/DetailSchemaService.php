@@ -30,8 +30,12 @@ class DetailSchemaService
                 ),
                 DetailType::Date->getValue() => new StringSchema(
                     name: $ocrDocumentDetail->name,
+                    description: ($ocrDocumentDetail->additional_info_for_prompt ?? '') . '- Convert in dd/mm/yyyy format'
+                ),
+                default => new StringSchema(
+                    name: $ocrDocumentDetail->name,
                     description: $ocrDocumentDetail->additional_info_for_prompt ?? ''
-                )
+                ),
             };
         }
 

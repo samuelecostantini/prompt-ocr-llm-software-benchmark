@@ -1,4 +1,4 @@
-@vite(['resources/css/app.css', 'resources/js/app.jss'])
+@vite(['resources/css/app.css', 'resources/js/app.js'])
 <x-filament-panels::page>
     <x-filament::card>
         <div>
