@@ -23,6 +23,10 @@ class Prompt extends Model
         return $this->hasMany(Run::class);
     }
 
+    public function extractedFields()
+    {
+        return $this->hasManyThrough(ExtractedField::class, Run::class, 'prompt_id', 'run_id', 'id', 'id');
+    }
     public function getAccuracy()
     {
         $totalAccuracy = 0;

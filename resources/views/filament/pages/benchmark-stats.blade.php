@@ -3,7 +3,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <div>
         <div
-            class="grid grid-cols-5 gap-6 w-full
+            class="grid not-xl:grid-cols-2 grid-cols-5 gap-6 w-full
                    rounded-xl
                    bg-gray-50 dark:bg-gray-900 p-4"
         >
