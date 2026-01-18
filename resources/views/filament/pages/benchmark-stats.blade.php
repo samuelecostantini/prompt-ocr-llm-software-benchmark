@@ -2,81 +2,78 @@
 <x-filament-panels::page>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <div>
-        <div
-            class="grid not-xl:grid-cols-2 grid-cols-5 gap-6 w-full
-                   rounded-xl
-                   bg-gray-50 dark:bg-gray-900 p-4"
-        >
-            @foreach (\App\Models\Prompt::all() as $prompt)
-                <div
-                    class="rounded-xl w-full p-5 shadow-sm border
-                           bg-white dark:bg-gray-800
-                           border-gray-200 dark:border-gray-700"
-                >
-
-                    {{-- Prompt name --}}
-                    <div class="mb-4 flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
+    <div class="ring-1 ring-gray-950/5 dark:ring-white/10 overflow-x-auto rounded-xl shadow-sm bg-white dark:bg-gray-900">
+        <table class="w-full table-auto divide-y divide-gray-200 dark:divide-white/5 text-left">
+            <thead class="bg-gray-50 dark:bg-white/5">
+                <tr>
+                    <th class="px-4 py-3.5 sm:px-6 text-sm font-semibold text-gray-900 dark:text-white border-r border-gray-200 dark:border-white/10">
+                        Tag / Prompt
+                    </th>
+                    
+                    @foreach ( \App\Models\Prompt::all() as $prompt)
+                        <th class="px-4 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-white max-w-[120px] overflow-hidden">
                             {{ $prompt->title }}
-                        </h3>
-                    </div>
+                            <div class="text-[10px] font-medium text-gray-400 uppercase tracking-wider mt-1">
+                                Avg: {{ number_format($prompt->getAccuracy(), 4) }}
+                            </div>
+                        </th>
+                    @endforeach
+                </tr>
+            </thead>
+            
+            <tbody class="divide-y divide-gray-200 dark:divide-white/5">
+                @foreach (\App\Models\Prompt::all()->flatMap(fn($p) => array_keys($p->getAccuracyByTag()))->unique()->sort() as $tag)
+                    <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition">
+                        <td class="px-4 py-3 sm:px-6 text-sm font-bold text-gray-700 dark:text-gray-200 bg-gray-50/50 dark:bg-white/5 border-r border-gray-200 dark:border-white/10 w-[200px] overflow-hidden">
+                            {{ $tag }}
+                        </td>
 
-                    {{-- Accuracy --}}
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-md text-gray-500 dark:text-gray-400">
-                                Accuracy
-                            </span>
+                        @foreach (\App\Models\Prompt::all() as $prompt)
+                            @php
+                                $accuracies = $prompt->getAccuracyByTag();
+                                $avgAccuracy = $accuracies[$tag] ?? null;
+                                
+                                // Definizione dei colori in base alla logica originale
+                                $colorClasses = 'text-gray-400 dark:text-gray-400'; // Default vuoto
+                                if ($avgAccuracy !== null) {
+                                    if ($avgAccuracy >= 0.90) {
+                                        $colorClasses = 'bg-green-500 dark:bg-green-500 dark:text-green-400';
+                                    } elseif ($avgAccuracy >= 0.75) {
+                                        $colorClasses = 'bg-yellow-500 dark:bg-yellow-500 dark:text-yellow-400';
+                                    } elseif ($avgAccuracy >= 0.50) {
+                                        $colorClasses = 'bg-orange-500 dark:bg-red-500 dark:text-red-400';
+                                    }
+                                } 
+                            @endphp
 
-                            <span class="text-md font-bold text-gray-900 dark:text-white">
-                                {{ number_format($prompt->getAccuracy() * 100, 2) }}%
-                            </span>
-                        </div>
-
-                        {{-- Progress bar --}}
-                        <div class="h-1 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-                            <div
-                                class="h-full rounded-full transition-all
-                                    @if ($prompt->getAccuracy() >= 0.90)
-                                        bg-green-500 dark:bg-green-400
-                                    @elseif ($prompt->getAccuracy() >= 0.55)
-                                        bg-yellow-500 dark:bg-yellow-400
-                                    @else
-                                        bg-red-500 dark:bg-red-400
-                                    @endif"
-                                style="width: {{ $prompt->getAccuracy() * 100 }}%"
-                            ></div>
-                        </div>
-                    </div>
-                    <div class="w-full space-y-2 mt-4">
-                        @foreach ($prompt->getAccuracyByTag() as $tag => $avgAccuracy)
-                            <div class="flex justify-between">
-                                <span>
-                                    <b>{{ $tag }}</b>:</span>
-                                    <span> {{ number_format($avgAccuracy*100, 2) }}%</span>
-                                </div>
-                            <div class="h-1 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-                            <div
-                                class="h-full rounded-full transition-all
-                                    @if ( $avgAccuracy >= 0.90)
-                                        bg-green-500 dark:bg-green-400
-                                    @elseif ( $avgAccuracy >= 0.55)
-                                        bg-yellow-500 dark:bg-yellow-400
-                                    @else
-                                        bg-red-500 dark:bg-red-400
-                                    @endif"
-                                style="width: {{ $avgAccuracy*100 }}%"
-                            ></div>
-                        </div>
+                            <td class="px-4 py-3 text-center text-sm font-medium border {{ $colorClasses }}">
+                                @if($avgAccuracy !== null)
+                                    {{ number_format($avgAccuracy, 4) }}
+                                @else
+                                    <span class="opacity-30">-</span>
+                                @endif
+                            </td>
                         @endforeach
-                    </div>
-                </div>
-            @endforeach
-        </div>
+                    </tr>
+                @endforeach
+                <tr>
+                    <td class="px-4 py-3 sm:px-6 text-sm font-bold text-gray-700 dark:text-gray-200 bg-gray-50/50 dark:bg-white/5 border-r border-gray-200 dark:border-white/10 w-[200px] overflow-hidden">
+                        Average accuracy
+                    </td>
+                    @foreach ( \App\Models\Prompt::all() as $prompt)
+                        <th class="px-4 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-white max-w-[120px] overflow-hidden">
+                            <div class="text-sm font-medium text-black dark:text-white uppercase tracking-wider mt-1">
+                                {{ number_format($prompt->getAccuracy(), 4) }}
+                            </div>
+                        </th>
+                    @endforeach
+                </tr>
+            </tbody>
+        </table>
+
     </div>
-    <div>
-        <div>Dati grezzi benchmark</div>
-    </div>
+</div>
+<div>Dati grezzi benchmark</div>
     <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
     <table class="w-full border-collapse text-md">
         <thead>
