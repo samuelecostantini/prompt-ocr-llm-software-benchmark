@@ -114,7 +114,7 @@ class BenchmarkStats extends Page
             ->join('document_details', 'document_details.id', '=', 'extracted_fields.document_detail_id')
             ->groupBy('document_details.type', 'benchmark_results.prompt_id');
 
-        Log::info('Average score by type query: ' . $query->toSql(), $query->getBindings());
+        Log::info('Average score by type query: '.$query->toSql(), $query->getBindings());
 
         $results = $query->get();
 

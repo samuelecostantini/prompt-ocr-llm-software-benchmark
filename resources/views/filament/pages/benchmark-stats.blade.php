@@ -15,15 +15,6 @@
                 </x-filament::button>
             </div>
             
-            <div class="flex items-center space-x-2">
-                <label for="sortColumn" class="text-sm font-medium text-gray-700 dark:text-gray-200">Sort by:</label>
-                <select wire:model.live='sortColumn' id="sortColumn" class="text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-                    <option value="tag">Tag</option>
-                    @foreach ($prompts as $prompt)
-                        <option value="{{ $prompt->id }}">{{ $prompt->title }}</option>
-                    @endforeach
-                </select>
-            </div>
         </div>
 
     {{-- Average Score by Type Table --}}
@@ -79,7 +70,15 @@
             </table>
         </div>
     </div>
-
+    <div class="flex items-center space-x-2">
+                <label for="sortColumn" class="text-sm font-medium text-gray-700 dark:text-gray-200">Sort by:</label>
+                <select wire:model.live='sortColumn' id="sortColumn" class="text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    <option value="tag">Tag</option>
+                    @foreach ($prompts as $prompt)
+                        <option value="{{ $prompt->id }}">{{ $prompt->title }}</option>
+                    @endforeach
+                </select>
+            </div>
     <div class="ring-1 ring-gray-950/5 dark:ring-white/10 overflow-x-auto rounded-xl shadow-sm bg-white dark:bg-gray-900">
         <table class="w-full table-auto divide-y divide-gray-200 dark:divide-white/5 text-left">
             <thead class="bg-gray-50 dark:bg-white/5">
