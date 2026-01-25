@@ -26,6 +26,60 @@
             </div>
         </div>
 
+    {{-- Average Score by Type Table --}}
+    <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Average Score by Detail Type</h3>
+        <div class="ring-1 ring-gray-950/5 dark:ring-white/10 overflow-x-auto rounded-xl shadow-sm bg-white dark:bg-gray-900">
+            <table class="w-full table-auto divide-y divide-gray-200 dark:divide-white/5 text-left">
+                <thead class="bg-gray-50 dark:bg-white/5">
+                    <tr>
+                        <th class="px-4 py-3.5 sm:px-6 text-sm font-semibold text-gray-900 dark:text-white border-r border-gray-200 dark:border-white/10">
+                            Type / Prompt
+                        </th>
+                        @foreach ($prompts as $prompt)
+                            <th class="px-4 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-white max-w-[120px] overflow-hidden">
+                                {{ $prompt->title }}
+                            </th>
+                        @endforeach
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-white/5">
+                    @foreach ($avgByType as $type => $promptScores)
+                        <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition">
+                            <td class="px-4 py-3 sm:px-6 text-sm font-bold text-gray-700 dark:text-gray-200 bg-gray-50/50 dark:bg-white/5 border-r border-gray-200 dark:border-white/10 w-[200px]">
+                                {{ $type ?? 'N/A' }}
+                            </td>
+                            @foreach ($prompts as $prompt)
+                                @php
+                                    $data = $promptScores[$prompt->id] ?? null;
+                                    $avgScore = $data['avg_score'] ?? null;
+
+                                    $colorClasses = 'text-gray-400 dark:text-gray-400';
+                                    if ($avgScore !== null) {
+                                        if ($avgScore >= 0.90) {
+                                            $colorClasses = 'bg-green-500 dark:bg-green-500 dark:text-green-400';
+                                        } elseif ($avgScore >= 0.75) {
+                                            $colorClasses = 'bg-yellow-500 dark:bg-yellow-500 dark:text-yellow-400';
+                                        } elseif ($avgScore >= 0.50) {
+                                            $colorClasses = 'bg-orange-500 dark:bg-red-500 dark:text-red-400';
+                                        }
+                                    }
+                                @endphp
+                                <td class="px-4 py-3 text-center text-sm font-medium border {{ $colorClasses }}">
+                                    @if($avgScore !== null)
+                                        {{ number_format($avgScore, 4) }}
+                                    @else
+                                        <span class="opacity-30">-</span>
+                                    @endif
+                                </td>
+                            @endforeach
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <div class="ring-1 ring-gray-950/5 dark:ring-white/10 overflow-x-auto rounded-xl shadow-sm bg-white dark:bg-gray-900">
         <table class="w-full table-auto divide-y divide-gray-200 dark:divide-white/5 text-left">
             <thead class="bg-gray-50 dark:bg-white/5">

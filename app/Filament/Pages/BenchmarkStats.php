@@ -6,6 +6,8 @@ use App\Models\BenchmarkResult;
 use App\Models\Prompt;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class BenchmarkStats extends Page
 {
@@ -16,6 +18,8 @@ class BenchmarkStats extends Page
     public $tags;
 
     public $accuracies;
+
+    public $avgByType;
 
     public $sortColumn = 'tag';
 
@@ -92,7 +96,37 @@ class BenchmarkStats extends Page
         $this->tags = $data['tags'];
         $this->accuracies = $data['accuracies'];
 
+        $this->loadAvgByType();
+
         $this->sortTags();
+    }
+
+    public function loadAvgByType(): void
+    {
+        $query = BenchmarkResult::query()
+            ->select(
+                'document_details.type',
+                'benchmark_results.prompt_id',
+                DB::raw('AVG(benchmark_results.score) as avg_score'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->join('extracted_fields', 'extracted_fields.id', '=', 'benchmark_results.extracted_field_id')
+            ->join('document_details', 'document_details.id', '=', 'extracted_fields.document_detail_id')
+            ->groupBy('document_details.type', 'benchmark_results.prompt_id');
+
+        Log::info('Average score by type query: ' . $query->toSql(), $query->getBindings());
+
+        $results = $query->get();
+
+        // Structure data as: type => [prompt_id => ['avg_score' => x, 'count' => y]]
+        $this->avgByType = $results->groupBy('type')->map(function ($typeResults) {
+            return $typeResults->keyBy('prompt_id')->map(function ($row) {
+                return [
+                    'avg_score' => $row->avg_score,
+                    'count' => $row->count,
+                ];
+            });
+        });
     }
 
     public function getBenchmarkResultsProperty()
