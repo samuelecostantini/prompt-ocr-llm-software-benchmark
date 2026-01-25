@@ -6,10 +6,8 @@ use App\AwsLowConfidenceError;
 use App\Interfaces\OCRService;
 use Aws\Textract\TextractClient;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use SebastianBergmann\Timer\Exception;
 use setasign\Fpdi\Fpdi;
-use setasign\Fpdi\PdfParser\CrossReference\CrossReferenceException;
 
 class AwsTextractService implements OCRService
 {
@@ -25,7 +23,6 @@ class AwsTextractService implements OCRService
                 'secret' => config('awstextract.secret'),
             ],
         ]);
-
 
         $cellMap = [];
         $rawLines = [];

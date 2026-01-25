@@ -4,15 +4,14 @@ namespace App\Filament\Resources\DocumentResource\RelationManagers;
 
 use App\Models\ExtractedField;
 use App\Models\Prompt;
-use App\Models\Run;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
-use Filament\Tables\Table;
-use Filament\Tables\Filters\Filter;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class DocumentDetailsRelationManager extends RelationManager
 {
@@ -37,11 +36,11 @@ class DocumentDetailsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('value')
                     ->label('Value'),
                 Tables\Columns\TextColumn::make('documentDetail.groundTruth.value')
-                    ->getStateUsing(fn (ExtractedField $record) => $record->document->groundTruths()->where('document_detail_id', $record->document_detail_id)->first()?->value? : 'N/A')
-                    ->label('Ground Truth'),    
+                    ->getStateUsing(fn (ExtractedField $record) => $record->document->groundTruths()->where('document_detail_id', $record->document_detail_id)->first()?->value ?: 'N/A')
+                    ->label('Ground Truth'),
                 Tables\Columns\TextColumn::make('run.prompt.title')
                     ->label('Prompt'),
- 
+
             ])
             ->filters([
                 Filter::make('prompt')

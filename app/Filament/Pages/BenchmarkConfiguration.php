@@ -6,7 +6,6 @@ use App\Filament\Resources\DocumentResource\RelationManagers\GroundTruthsRelatio
 use App\Models\Document;
 use Filament\Pages\Page;
 use Filament\Resources\Pages\Concerns\HasRelationManagers;
-use JetBrains\PhpStorm\NoReturn;
 
 class BenchmarkConfiguration extends Page
 {

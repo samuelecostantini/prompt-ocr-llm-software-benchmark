@@ -62,6 +62,11 @@ class DocumentDetailResource extends Resource
                     ->readonly()
                     ->default(auth()->user()->id),
 
+                TextInput::make('weight')
+                    ->numeric()
+                    ->default(1)
+                    ->helperText('Weight used during extraction to prioritize this detail over others. Higher weight means higher priority.'),
+
                 Textarea::make('additional_info_for_prompt')
                     ->columnSpanFull(),
 

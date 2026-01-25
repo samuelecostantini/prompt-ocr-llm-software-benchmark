@@ -64,10 +64,16 @@ class DetailSetResource extends Resource
 
                         Select::make('type')
                             ->options(DetailType::class),
+                        TextInput::make('weight')
+                            ->numeric()
+                            ->default(1.0)
+                            ->step(0.1)
+                            ->helperText('Weight determines the importance of this detail when calculating overall accuracy. Higher weight means more importance.'),
                         Textarea::make('additional_info_for_prompt')
                             ->columnSpanFull(),
 
-                        Checkbox::make('nullable'),
+                        Checkbox::make('nullable')
+                            ->default(true),
                     ])
                     ->columns(2)
                     ->columnSpanFull()

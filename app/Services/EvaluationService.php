@@ -10,20 +10,20 @@ class EvaluationService
 {
     public function __construct() {}
 
-    public function computeScore(string $extractedValue, ?string $expectedValue, string $detailType): float
+    public function computeScore(?string $extractedValue, ?string $expectedValue, string $detailType): float
     {
-        if($expectedValue === null){
-            if($extractedValue === null 
+        if ($expectedValue === null) {
+            if ($extractedValue === null
                 || $extractedValue === ''
-                || $extractedValue === '0' 
+                || $extractedValue === '0'
                 || $extractedValue === 0
-            ){ 
-                return 1.0; 
-            } else{
-                return 0.0; 
+            ) {
+                return 1.0;
+            } else {
+                return 0.0;
             }
         }
-                
+
         return match ($detailType) {
             DetailType::String->getValue() => $this->compareStringsWithJaccard($extractedValue, $expectedValue),
             DetailType::Number->getValue() => $this->compareNumbers($extractedValue, $expectedValue),
@@ -32,7 +32,7 @@ class EvaluationService
         };
     }
 
-    protected function compareNumbers(string $extractedValue, string $expectedValue)
+    protected function compareNumbers(?string $extractedValue, string $expectedValue)
     {
         $cleanedExtracted = preg_replace('/[^\d.,]/', '', $extractedValue);
         $cleanedExpected = preg_replace('/[^\d.,]/', '', $expectedValue);
@@ -47,7 +47,7 @@ class EvaluationService
         return 0.0;
     }
 
-    protected function compareDates(string $extractedValue, string $expectedValue)
+    protected function compareDates(?string $extractedValue, string $expectedValue)
     {
         $extractedValue = str_replace(['-', '.'], '/', $extractedValue);
         $expectedValue = str_replace(['-', '.'], '/', $expectedValue);
@@ -72,7 +72,7 @@ class EvaluationService
         return $dateEx->eq($dateExp) ? 1.0 : 0.0;
     }
 
-    protected function compareStringsWithJaccard(string $extractedValue, string $expectedValue)
+    protected function compareStringsWithJaccard(?string $extractedValue, string $expectedValue)
     {
         return similar_text(strtolower($extractedValue), strtolower($expectedValue), $percent) ? $percent / 100 : 0.0;
     }

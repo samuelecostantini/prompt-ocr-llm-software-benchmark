@@ -2,6 +2,30 @@
 <x-filament-panels::page>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <div>
+        <div class="flex justify-between items-center mb-4">
+            <div>
+                <x-filament::button wire:click='resetBenchData'>
+                    Reset Benchmark Data
+                </x-filament::button>
+                <x-filament::button wire:click='reRunBenchmark'>
+                    Run Benchmark
+                </x-filament::button>
+                <x-filament::button wire:click='runBulkExtraction' color="danger">
+                    Run Bulk Extraction
+                </x-filament::button>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+                <label for="sortColumn" class="text-sm font-medium text-gray-700 dark:text-gray-200">Sort by:</label>
+                <select wire:model.live='sortColumn' id="sortColumn" class="text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    <option value="tag">Tag</option>
+                    @foreach ($prompts as $prompt)
+                        <option value="{{ $prompt->id }}">{{ $prompt->title }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
     <div class="ring-1 ring-gray-950/5 dark:ring-white/10 overflow-x-auto rounded-xl shadow-sm bg-white dark:bg-gray-900">
         <table class="w-full table-auto divide-y divide-gray-200 dark:divide-white/5 text-left">
             <thead class="bg-gray-50 dark:bg-white/5">
@@ -10,11 +34,11 @@
                         Tag / Prompt
                     </th>
                     
-                    @foreach ( \App\Models\Prompt::all() as $prompt)
+                    @foreach ($prompts as $prompt)
                         <th class="px-4 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-white max-w-[120px] overflow-hidden">
                             {{ $prompt->title }}
                             <div class="text-[10px] font-medium text-gray-400 uppercase tracking-wider mt-1">
-                                Avg: {{ number_format($prompt->getAccuracy(), 4) }}
+                                Avg: {{ number_format($accuracies[$prompt->id]['overall'], 4) }}
                             </div>
                         </th>
                     @endforeach
@@ -22,18 +46,16 @@
             </thead>
             
             <tbody class="divide-y divide-gray-200 dark:divide-white/5">
-                @foreach (\App\Models\Prompt::all()->flatMap(fn($p) => array_keys($p->getAccuracyByTag()))->unique()->sort() as $tag)
+                @foreach ($tags as $tag)
                     <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition">
                         <td class="px-4 py-3 sm:px-6 text-sm font-bold text-gray-700 dark:text-gray-200 bg-gray-50/50 dark:bg-white/5 border-r border-gray-200 dark:border-white/10 w-[200px] overflow-hidden">
                             {{ $tag }}
                         </td>
 
-                        @foreach (\App\Models\Prompt::all() as $prompt)
+                        @foreach ($prompts as $prompt)
                             @php
-                                $accuracies = $prompt->getAccuracyByTag();
-                                $avgAccuracy = $accuracies[$tag] ?? null;
+                                $avgAccuracy = $accuracies[$prompt->id]['by_tag'][$tag] ?? null;
                                 
-                                // Definizione dei colori in base alla logica originale
                                 $colorClasses = 'text-gray-400 dark:text-gray-400'; // Default vuoto
                                 if ($avgAccuracy !== null) {
                                     if ($avgAccuracy >= 0.90) {
@@ -60,10 +82,23 @@
                     <td class="px-4 py-3 sm:px-6 text-sm font-bold text-gray-700 dark:text-gray-200 bg-gray-50/50 dark:bg-white/5 border-r border-gray-200 dark:border-white/10 w-[200px] overflow-hidden">
                         Average accuracy
                     </td>
-                    @foreach ( \App\Models\Prompt::all() as $prompt)
+                    @foreach ( $prompts as $prompt)
                         <th class="px-4 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-white max-w-[120px] overflow-hidden">
                             <div class="text-sm font-medium text-black dark:text-white uppercase tracking-wider mt-1">
-                                {{ number_format($prompt->getAccuracy(), 4) }}
+                                {{ number_format($accuracies[$prompt->id]['overall'], 4) }}
+                            </div>
+                        </th>
+                    @endforeach
+                    
+                </tr>
+                <tr>
+                <td class="px-4 py-3 sm:px-6 text-sm font-bold text-gray-700 dark:text-gray-200 bg-gray-50/50 dark:bg-white/5 border-r border-gray-200 dark:border-white/10 w-[200px] overflow-hidden">
+                        Average weighted accuracy
+                    </td>
+                    @foreach ( $prompts as $prompt)
+                        <th class="px-4 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-white max-w-[120px] overflow-hidden">
+                            <div class="text-sm font-medium text-black dark:text-white uppercase tracking-wider mt-1">
+                                {{ number_format($accuracies[$prompt->id]['weighted'], 4) }}
                             </div>
                         </th>
                     @endforeach
@@ -74,6 +109,24 @@
     </div>
 </div>
 <div>Dati grezzi benchmark</div>
+<div class="flex">
+    <div>Order by: </div>
+    <select wire:model.live="sortRawBy" 
+            class="mb-4 mr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full max-w-md">
+        <option value="created_at">Default</option>
+        <option value="prompt">Prompt</option>
+        <option value="document">Document</option>
+        <option value="detail_name">Detail name</option>
+        <option value="extracted_value">Extracted value</option>
+        <option value="expected_value">Ground truth value</option>
+        <option value="score">Score</option>
+    </select>
+    <select wire:model.live="order" 
+            class="mb-4 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full max-w-md">
+        <option value="asc">Asc</option>
+        <option value="desc">Desc</option>
+</select>
+</div>
     <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
     <table class="w-full border-collapse text-md">
         <thead>
@@ -99,14 +152,16 @@
                 <th class="px-4 py-3 text-left font-semibold">
                     Score
                 </th>
+                <th class="px-4 py-3 text-left font-semibold">
+                    Value Type
+                </th>
             </tr>
         </thead>
 
         <tbody
-            class="divide-y-gray
-                   bg-white dark:bg-gray-900"
+            class="divide-y-gray bg-white dark:bg-gray-900"
         >
-            @foreach (\App\Models\BenchmarkResult::all()->sortByDesc('document_id') as $result)
+            @foreach ($this->benchmarkResults as $result)
                 <tr class="odd:bg-gray-500/25">
                     <td class="px-4 py-3 text-gray-800 dark:text-white">
                         {{ $result->prompt?->title }}
@@ -140,6 +195,9 @@
                         >
                             {{ $result->score }}
                         </span>
+                    </td>
+                    <td class="px-4 py-3">
+                        {{ $result->extractedField?->documentDetail?->type }}
                     </td>
                 </tr>
             @endforeach

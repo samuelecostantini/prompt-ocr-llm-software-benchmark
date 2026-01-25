@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\DocumentResource\RelationManagers;
 
-use App\Models\GroundTruth;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
