@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\DetailType;
+use Log;
 use Carbon\Carbon;
 use Throwable;
 
@@ -40,11 +41,13 @@ class EvaluationService
         $floatEx = (float) str_replace(',', '.', $cleanedExtracted);
         $floatExp = (float) str_replace(',', '.', $cleanedExpected);
 
-        if (abs($floatEx - $floatExp) < 0.01) {
-            return 1.0;
-        }
+        $diff = abs($floatEx - $floatExp);
 
-        return 0.0;
+        $score = 1.0 - $diff;
+
+        Log::info("Comparing numbers: extracted={$floatEx}, expected={$floatExp}, diff={$diff}, score={$score}");
+
+        return $score < 0 ? 0.0 : $score;
     }
 
     protected function compareDates(?string $extractedValue, string $expectedValue)
