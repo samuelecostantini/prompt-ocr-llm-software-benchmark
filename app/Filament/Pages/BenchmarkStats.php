@@ -193,7 +193,7 @@ class BenchmarkStats extends Page
 
     public function runBulkExtraction(): void
     {
-        \App\Jobs\BulkRunJob::dispatch(new \App\Models\Run);
+        \App\Jobs\BulkRunJob::dispatch();
     }
 
     public function reRunBenchmark(): void

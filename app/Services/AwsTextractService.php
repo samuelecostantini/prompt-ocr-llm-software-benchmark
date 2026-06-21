@@ -6,7 +6,6 @@ use App\AwsLowConfidenceError;
 use App\Interfaces\OCRService;
 use Aws\Textract\TextractClient;
 use Illuminate\Support\Facades\Log;
-use SebastianBergmann\Timer\Exception;
 use setasign\Fpdi\Fpdi;
 
 class AwsTextractService implements OCRService
@@ -32,10 +31,17 @@ class AwsTextractService implements OCRService
 
         try {
             $fp_image = fopen($filePath, 'rb');
+            if ($fp_image === false) {
+                Log::channel('extraction')->error('fopen error: unable to open '.$filePath);
+
+                return null;
+            }
             $image = fread($fp_image, filesize($filePath));
             fclose($fp_image);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::channel('extraction')->error('fopen error: '.$e->getMessage());
+
+            return null;
         }
 
         try {
@@ -47,7 +53,7 @@ class AwsTextractService implements OCRService
                     'FeatureTypes' => ['TABLES', 'FORMS'],
                 ]
             );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::channel('extraction')->error('analyzeDocument error: '.$e->getMessage());
 
             return null;
@@ -63,7 +69,7 @@ class AwsTextractService implements OCRService
             }
         }
 
-        $avg = $sum / $count;
+        $avg = $count > 0 ? $sum / $count : 0;
 
         Log::channel('extraction')->info('confidence level avg: '.$avg);
         // dump('confidence level avg: '.$avg);
@@ -215,10 +221,10 @@ class AwsTextractService implements OCRService
 
         $textractClient = new TextractClient([
             'version' => 'latest',
-            'region' => config('awstextcract.region'),
+            'region' => config('awstextract.region'),
             'credentials' => [
-                'key' => config('awstextcract.key'),
-                'secret' => config('awstextcract.secret'),
+                'key' => config('awstextract.key'),
+                'secret' => config('awstextract.secret'),
             ],
         ]);
 
@@ -301,7 +307,7 @@ class AwsTextractService implements OCRService
                 $new_filename = $end_directory.str_replace('.pdf', '', $filename).'_'.$i.'.pdf';
                 $new_pdf->Output($new_filename, 'F');
                 $files[] = $new_filename;
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
             }
         }
 

@@ -29,7 +29,12 @@ class RunExtractionAction
         Log::channel('extraction')->info('$structured_result: '.json_encode($structured_result, JSON_PRETTY_PRINT));
 
         foreach ($structured_result as $key => $result) {
-            $document_detail_id = DocumentDetail::whereName($key)->first()->id;
+            // Scope to the document's DetailSet so a shared field name in
+            // another set (e.g. "total", "date") can't be matched by accident.
+            $document_detail_id = DocumentDetail::query()
+                ->where('detail_set_id', $document->detail_set_id)
+                ->where('name', $key)
+                ->first()->id;
             $document->extractedFields()->create([
                 'document_detail_id' => $document_detail_id,
                 'run_id' => $run->id,

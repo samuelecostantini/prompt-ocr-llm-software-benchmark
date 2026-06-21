@@ -28,17 +28,20 @@ class RunBenchmarkAction
                     $extractedField->documentDetail?->type ?? ''
                 );
 
-                BenchmarkResult::create([
-                    'run_id' => $extractedField->run_id,
-                    'prompt_id' => $extractedField->run?->prompt_id ?: 0,
-                    'document_id' => $extractedField->document_id,
-                    'extracted_field_id' => $extractedField->id,
-                    'detail_name' => $extractedField->documentDetail?->name ?? '',
-                    'detail_id' => $extractedField->document_detail_id,
-                    'extracted_value' => $extractedValue,
-                    'expected_value' => $expectedValue,
-                    'score' => $score,
-                ]);
+                BenchmarkResult::updateOrCreate(
+                    ['extracted_field_id' => $extractedField->id],
+                    [
+                        'run_id' => $extractedField->run_id,
+                        'prompt_id' => $extractedField->run?->prompt_id,
+                        'document_id' => $extractedField->document_id,
+                        'extracted_field_id' => $extractedField->id,
+                        'detail_name' => $extractedField->documentDetail?->name ?? '',
+                        'detail_id' => $extractedField->document_detail_id,
+                        'extracted_value' => $extractedValue,
+                        'expected_value' => $expectedValue,
+                        'score' => $score,
+                    ]
+                );
             }
         });
     }

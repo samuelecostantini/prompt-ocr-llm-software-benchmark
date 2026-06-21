@@ -46,10 +46,15 @@ class BulkRunJob implements ShouldQueue
                     Log::channel('extraction')->info('$structured_result: '.json_encode($structured_result, JSON_PRETTY_PRINT));
 
                     foreach ($structured_result as $key => $result) {
-                        if (DocumentDetail::whereName($key)->first() !== null) {
-                            $document_detail_id = DocumentDetail::whereName($key)->first()->id;
+                        // Scope to the document's DetailSet so a shared field
+                        // name in another set can't be matched by accident.
+                        $detail = DocumentDetail::query()
+                            ->where('detail_set_id', $document->detail_set_id)
+                            ->where('name', $key)
+                            ->first();
+                        if ($detail !== null) {
                             $document->extractedFields()->create([
-                                'document_detail_id' => $document_detail_id,
+                                'document_detail_id' => $detail->id,
                                 'run_id' => $run->id,
                                 'value' => $result,
                             ]);

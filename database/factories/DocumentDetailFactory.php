@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\DetailSet;
 use App\Models\DocumentDetail;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -23,6 +24,8 @@ class DocumentDetailFactory extends Factory
             'updated_at' => Carbon::now(),
 
             'user_id' => User::factory(),
+            // detail_set_id is NOT NULL in the schema; weight defaults to 1.
+            'detail_set_id' => DetailSet::factory(),
         ];
     }
 }

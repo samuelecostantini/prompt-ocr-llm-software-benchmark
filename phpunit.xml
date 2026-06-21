@@ -29,5 +29,12 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+
+        <!-- Stub credentials so config('awstextract.*') / OpenAI/Prism config never resolve null.
+             No network is ever reached: services are faked in the tests that exercise them. -->
+        <env name="AWS_ACCESS_KEY_ID" value="test"/>
+        <env name="AWS_SECRET_ACCESS_KEY" value="test"/>
+        <env name="AWS_DEFAULT_REGION" value="us-east-1"/>
+        <env name="OPENAI_API_KEY" value="test-key"/>
     </php>
 </phpunit>
