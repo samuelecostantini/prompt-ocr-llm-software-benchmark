@@ -1,4 +1,4 @@
-# 🔥 Prompt-OCR LLM Software Benchmark
+# Prompt-OCR LLM Software Benchmark
 
 **The next-gen open-source platform for benchmarking OCR and LLM-powered document extraction workflows. Designed for researchers and power users.**
 
@@ -8,7 +8,7 @@
 
 ---
 
-## 🚀 Overview
+## Overview
 
 Welcome to **Prompt-OCR LLM Software Benchmark**, a modern SaaS platform for evaluating the true power of AI for document extraction. Whether you’re comparing AWS Textract, OpenAI (via Prism), or custom prompts, this highly extensible Laravel 11 application makes it easy to **upload documents, define field schemas, run LLM-powered extractions, and score results vs. ground truth**.
 
@@ -28,7 +28,7 @@ Built for research, transparent benchmarking, and integration into your own docu
 
 ---
 
-## 🗂️ Codebase Structure
+## Codebase Structure
 
 ### Core Processing Pipeline
 
@@ -65,15 +65,15 @@ app/
 
 ### Key Features
 
-- 🔗 **Document-driven UI**: Upload, schema config, and prompt association in a breeze
-- ⏳ **Asynchronous Job Processing**: All extractions/refinements run as jobs (support for database queue)
-- 📊 **Benchmarking Dashboard**: Out-of-the-box stats for Jaccard/score metrics per field & doc type
-- 👾 **MediaLibrary & PDF Rendering**: Visualize uploaded docs and page splits natively
-- 🌈 **Modern Admin**: Fully reactive, themeable, and ready for custom expansion
+-  **Document-driven UI**: Upload, schema config, and prompt association in a breeze
+-  **Asynchronous Job Processing**: All extractions/refinements run as jobs (support for database queue)
+-  **Benchmarking Dashboard**: Out-of-the-box stats for Jaccard/score metrics per field & doc type
+-  **MediaLibrary & PDF Rendering**: Visualize uploaded docs and page splits natively
+-  **Modern Admin**: Fully reactive, themeable, and ready for custom expansion
 
 ---
 
-## ⚡ Quickstart
+## Quickstart
 
 ```bash
 git clone https://github.com/SamueleCostantini/prompt-ocr-llm-software-benchmark.git
@@ -89,7 +89,7 @@ Navigate to `http://localhost:8000` and login with your admin credentials.
 
 ---
 
-## ✨ Example Workflow
+## Example Workflow
 
 1. **Upload a Document**: PDF/image support, powered by Spatie's MediaLibrary.
 2. **Define DetailSet**: Specify the schema (fields, types, formats) for extraction.
@@ -100,7 +100,7 @@ Navigate to `http://localhost:8000` and login with your admin credentials.
 
 ---
 
-## 🧠 Architecture in Depth
+## Architecture in Depth
 
 - **Services/**  
   Core pipeline logic (AWS OCR, LLM extraction, schema/evaluation service)
@@ -115,7 +115,7 @@ Navigate to `http://localhost:8000` and login with your admin credentials.
 
 ---
 
-## 📝 Environment Variables
+## Environment Variables
 
 - `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, `AWS_BUCKET`
 - `OPENAI_API_KEY`
@@ -123,7 +123,7 @@ Navigate to `http://localhost:8000` and login with your admin credentials.
 
 ---
 
-## 📖 Documentation & Further Reading
+## Documentation & Further Reading
 
 - Rich inline code comments & services
 - See `CLAUDE.md` for AI/coding assistant usage within the repo
@@ -138,6 +138,6 @@ Developed by [Samuele Costantini](https://github.com/SamueleCostantini) and cont
 
 ---
 
-## 💡 License
+## License
 
 MIT License – free for research, benchmarking, and your own wild LLM document adventures!
