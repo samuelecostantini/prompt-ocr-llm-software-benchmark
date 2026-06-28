@@ -22,6 +22,7 @@
         "justinrainbow/json-schema": "^6.2",
         "laravel-lang/common": "^6.5",
         "laravel/framework": "^11.31",
+        "laravel/pennant": "^1.23",
         "laravel/tinker": "^2.9",
         "league/flysystem-aws-s3-v3": "^3.29",
         "livewire/livewire": "^3.4",

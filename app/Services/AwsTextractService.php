@@ -215,10 +215,10 @@ class AwsTextractService implements OCRService
 
         $textractClient = new TextractClient([
             'version' => 'latest',
-            'region' => config('awstextcract.region'),
+            'region' => config('awstextract.region'),
             'credentials' => [
-                'key' => config('awstextcract.key'),
-                'secret' => config('awstextcract.secret'),
+                'key' => config('awstextract.key'),
+                'secret' => config('awstextract.secret'),
             ],
         ]);
 
